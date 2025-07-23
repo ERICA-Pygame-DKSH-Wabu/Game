@@ -1,0 +1,33 @@
+import pygame
+import os
+
+def get_im(path):
+    base_path = os.path.dirname(__file__)
+    full_path = os.path.join(base_path, path)
+    image = pygame.image.load(full_path)
+    return image
+
+def set_im(image, width, height,alpha,flip):
+    im=pygame.transform.smoothscale(image, (width, height)).convert_alpha()
+    im.set_alpha(alpha)
+    if flip:
+        pygame.transform.flip(im, True, False)
+    return im
+
+def get_frame(folder_path, width, height, alpha,flip):
+    base_path = os.path.dirname(__file__)
+    full_folder_path = os.path.join(base_path, folder_path)
+
+    filenames = sorted(
+        [f for f in os.listdir(full_folder_path) if f.endswith(".png")],
+        key=lambda x: int(os.path.splitext(x)[0])
+    )
+
+    frame_list = []
+    for filename in filenames:
+        full_image_path = os.path.join(folder_path, filename)
+        image = get_im(full_image_path)
+        resized_image = set_im(image, width, height, alpha,True)
+        frame_list.append(resized_image)
+
+    return frame_list
