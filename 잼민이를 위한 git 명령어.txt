@@ -1,0 +1,13 @@
+변경사항 레포지토리에 반영하는 법 (지성 -> 레포지토리)
+
+1. git add .
+2. git commit -m "메시지"
+3. git push -u origin main
+
+변경사항 반영받는 법 (레포지토리 -> 지성)
+
+1. git pull origin main
+
+만약 레포지토리와 연결이 끊어지면?
+
+git remote add origin https://github.com/ERICA-Pygame-DKSH-Wabu/Game.git
