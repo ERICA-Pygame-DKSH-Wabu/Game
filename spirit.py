@@ -10,7 +10,10 @@ class Spirit():
         self.condition=""
         self.im=None
 
+        self.max_health=0
         self.health=0
+        self.length=0
+
         self.speed=1
         self.cooltime=0
         self.ct=0
@@ -44,10 +47,10 @@ class Light_Spirit(Spirit):
         super.__init__(self,x,y,pos)
         self.name="light"
 
-class Rock_Spirit(Spirit):
+class Stone_Spirit(Spirit):
     def __init__(self,x,y,pos):
         super.__init__(self,x,y,pos)
-        self.name="rock"
+        self.name="stone"
 
 class Fire_Spirit(Spirit):
     def __init__(self,x,y,pos):
@@ -63,8 +66,3 @@ class Grass_Spirit(Spirit):
     def __init__(self,x,y,pos):
         super.__init__(self,x,y,pos)
         self.name="grass"
-
-class Wind_Spirit(Spirit):
-    def __init__(self,x,y,pos):
-        super.__init__(self,x,y,pos)
-        self.name="wind"
