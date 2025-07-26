@@ -20,5 +20,3 @@ while playing:
     screen.fill(WHITE)
     pygame.display.flip()
 pygame.quit()
-
-#황지성 키 15cm
