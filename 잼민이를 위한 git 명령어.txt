@@ -1,8 +1,8 @@
 변경사항 레포지토리에 반영하는 법 (지성 -> 레포지토리)
 
-1. git add .
-2. git commit -m "메시지"
-3. git push -u origin main
+git add .
+git commit -m "메시지"
+git push -u origin main
 
 변경사항 반영받는 법 (레포지토리 -> 지성)
 

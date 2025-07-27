@@ -8,7 +8,8 @@ def get_im(path):
     return image
 
 def set_im(image, width, height,alpha,flip):
-    im=pygame.transform.smoothscale(image, (width, height)).convert_alpha()
+    imag=image.convert_alpha()
+    im=pygame.transform.smoothscale(imag, (width, height))
     im.set_alpha(alpha)
     if flip:
         pygame.transform.flip(im, True, False)
