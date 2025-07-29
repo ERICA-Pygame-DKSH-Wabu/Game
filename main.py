@@ -20,45 +20,72 @@ spirit_dict={
 
 pygame.display.set_caption("forest witch")
 
-spirit_l=[]
+spirit_list=[]
 
 
 WHITE = (255, 255, 255)
-spirit_pos_l = []
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+GREEN = (0, 255, 0)
+YELLOW = (255, 255, 0)
+BLACK = (0, 0, 0)
+
+spirit_pos_list = []
+
 for i in range(6):
     for j in range(4):
-        x = i * 70 + j * 30 + 70
-        y = screen_height - (j + 1) * 60 - 70
-        rect = pygame.Rect(x, y, 10, 10)
-        spirit_pos_l.append(rect)
-store_button_l=[]
-for i in  range(6):
-    store_button_l.append(Store_Button(screen_width-100*i-100,50,pygame.rect.Rect(screen_width-100*i-100,50,50,50),spirit_type[i]))
-fps = pygame.time.Clock()
+        x = i * 80 + j * 30 + 120
+        y = screen_height - (j + 1) * 80 - 90
+        rect = pygame.Rect(x, y, 30, 30)
+        spirit_pos_list.append(rect)
+        
+store_btn_list=[]
 
+for i in  range(6):
+    store_btn_list.append(Store_Button(screen_width-100*i-100,50,pygame.rect.Rect(screen_width-100*i-100,50,50,50),spirit_type[i]))
+
+fps = pygame.time.Clock()
 playing = True
+
 while playing:
     dt = fps.tick(60)
-    mouse_pos_x,mouse_pos_y=pygame.mouse.get_pos()
-    mouse_condition=pygame.mouse.get_pressed()
+    mouse_pos_x, mouse_pos_y = pygame.mouse.get_pos()
+    mouse_condition = pygame.mouse.get_pressed()
     screen.fill(WHITE)
-    for i in  spirit_pos_l:
-        pygame.draw.rect(screen,(0,0,0),i)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            playing = False
-    for i in store_button_l:
+
+    for i in spirit_pos_list:
+        pygame.draw.rect(screen, (0, 0, 0), i)
+
+    # 드래그 중인 버튼 찾기
+    dragging_btn = None
+    for btn in store_btn_list:
+        if btn.dragging:
+            dragging_btn = btn
+            break
+
+    for i in store_btn_list:
         i.set_hitbox()
-        data= i.drag((mouse_pos_x,mouse_pos_y), mouse_condition, spirit_pos_l)
-        if data:
-            spirit_l.append(spirit_dict[data[1]](data[0]))
-            spirit_l[-1].set_frame()
+        if dragging_btn is None:
+            data = i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
+            if data:
+                spirit_list.append(spirit_dict[data[1]](data[0]))
+                spirit_list[-1].set_frame()
+        elif i is dragging_btn:
+            data = i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
+            if data:
+                spirit_list.append(spirit_dict[data[1]](data[0]))
+                spirit_list[-1].set_frame()
+
         i.draw(screen)
 
-    for i in spirit_l:
+    for i in spirit_list:
         i.change_frame(dt)
         i.draw(screen)
 
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            playing = False
 
     pygame.display.flip()
+
 pygame.quit()
