@@ -1,162 +1,65 @@
 [
     {
-        "wave" : 1,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
+        "wave": 1,
+        "index_1": ["water"],
+        "index_2": [],
+        "index_3": ["light"],
+        "index_4": []
     },
     {
-        "wave" : 2,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
+        "wave": 2,
+        "index_1": ["fire"],
+        "index_2": ["grass"],
+        "index_3": ["stone"],
+        "index_4": []
     },
     {
-        "wave" : 3,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
+        "wave": 3,
+        "index_1": ["water", "fire"],
+        "index_2": ["grass"],
+        "index_3": ["light", "stone"],
+        "index_4": []
     },
     {
-        "wave" : 4,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
+        "wave": 4,
+        "index_1": ["dark", "grass"],
+        "index_2": ["fire", "stone"],
+        "index_3": ["water"],
+        "index_4": ["light"]
     },
     {
-        "wave" : 5,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
+        "wave": 5,
+        "index_1": ["light", "water"],
+        "index_2": ["stone", "fire"],
+        "index_3": ["grass", "dark"],
+        "index_4": ["fire"]
     },
     {
-        "wave" : 6,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
+        "wave": 6,
+        "index_1": ["fire", "grass", "stone"],
+        "index_2": ["water", "light", "dark"],
+        "index_3": ["dark", "fire"],
+        "index_4": ["grass", "stone"]
     },
     {
-        "wave" : 7,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
+        "wave": 7,
+        "index_1": ["stone", "light", "water", "fire"],
+        "index_2": ["fire", "grass", "dark"],
+        "index_3": ["dark", "fire", "water"],
+        "index_4": ["stone", "grass"]
     },
     {
-        "wave" : 8,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
+        "wave": 8,
+        "index_1": ["grass", "fire", "dark", "light"],
+        "index_2": ["water", "stone", "light", "fire"],
+        "index_3": ["fire", "grass", "dark"],
+        "index_4": ["grass", "fire", "stone"]
     },
     {
-        "wave" : 9,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
-    },
-    {
-        "wave" : 10,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
-    },
-    {
-        "wave" : 11,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
-    },
-    {
-        "wave" : 12,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
-    },
-    {
-        "wave" : 13,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
-    },
-    {
-        "wave" : 14,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
-    },
-    {
-        "wave" : 15,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
-    },
-    {
-        "wave" : 16,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
-    },
-    {
-        "wave" : 17,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
-    },
-    {
-        "wave" : 18,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
-    },
-    {
-        "wave" : 19,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
-    },
-    {
-        "wave" : 20,
-        "index_1" : {},
-        "index_2" : {},
-        "index_3" : {},
-        "index_4" : {},
-        "index_5" : {}
+        "wave": 9,
+        "index_1": ["water", "fire", "grass", "light"],
+        "index_2": ["stone", "dark", "water", "fire"],
+        "index_3": ["grass", "light", "stone", "dark"],
+        "index_4": ["water", "fire", "grass", "light"]
     }
 ]
