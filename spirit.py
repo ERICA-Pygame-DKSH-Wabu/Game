@@ -24,9 +24,9 @@ class Spirit():
 
     def set_frame(self):
         self.frame={
-            "attack": get_frame(f"asset/spirit/{self.name}/attack",self.im_size,self.im_size,200,True),
-            "idle": get_frame(f"asset/spirit/{self.name}/idle",self.im_size,self.im_size,200,True),
-            "spin": get_frame(f"asset/spirit/{self.name}/spin",self.im_size,self.im_size,200,True)
+            "attack": get_frame(f"asset/spirit/{self.name}/attack",self.im_size,self.im_size,255),
+            "idle": get_frame(f"asset/spirit/{self.name}/idle",self.im_size,self.im_size,255),
+            "spin": get_frame(f"asset/spirit/{self.name}/spin",self.im_size,self.im_size,255)
         }
 
     def change_frame(self,dt):

@@ -22,13 +22,19 @@ class Store_Button(Button):
     def __init__(self, x, y, hitbox, s_type):
         super().__init__(x, y, hitbox)
         self.s_type = s_type
+        self.im_size=144
         self.original_pos = (x, y)
         self.sprit = None
         self.dragging = False
-        self.img = get_im(f"asset/ui/store_btn/{self.s_type}.png")
-        self.img = pygame.transform.smoothscale(self.img, (80, 80))
-        self.offset_x = -15  
-        self.offset_y = -15
+        self.frame_index=0
+
+        self.frame=get_frame(f"asset/ui/store_btn/{self.s_type}",self.im_size,self.im_size,255)
+        self.im = self.frame[0]
+        
+
+        self.string_im=get_im("asset/ui/string.png")
+        self.string_im=set_im(self.string_im,self.im_size,self.im_size,255,True)
+
 
     def set_hitbox(self):
         self.hitbox.center = (self.x, self.y)
@@ -52,6 +58,14 @@ class Store_Button(Button):
                 return False
 
     def draw(self, screen):
-        screen.blit(self.img, (self.hitbox.left + self.offset_x, self.hitbox.top + self.offset_y))
-        pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 2)
+        screen.blit(self.im, (self.hitbox.centerx-self.im.get_width()//2,self.hitbox.centery-self.im.get_height()//2))
+        screen.blit(self.string_im, (self.original_pos[0]-self.string_im.get_width()//2,self.original_pos[1]-self.string_im.get_height()//5*2))
+        #pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 2)
+
+    def change_frame(self,dt):
+        self.im=self.frame[int(self.frame_index)]
+        if len(self.frame) <= int(self.frame_index+0.01*dt) :
+            self.frame_index=0
+        else:
+            self.frame_index+=0.01*dt
 

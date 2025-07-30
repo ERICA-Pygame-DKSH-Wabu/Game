@@ -4,7 +4,7 @@ from button import *
 from spirit import *
 
 pygame.init()
-spirit_type=["water","fire","grass","stone","light","dark"]
+spirit_type=["water","fire","grass","light","stone","dark"]
 screen_width = 1280
 screen_height = 640
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -35,7 +35,7 @@ spirit_pos_list = []
 for i in range(6):
     for j in range(4):
         x = i * 80 + j * 30 + 120
-        y = screen_height - (j + 1) * 80 - 90
+        y = screen_height - (j + 1) * 80 - 20
         rect = pygame.Rect(x, y, 30, 30)
         spirit_pos_list.append(rect)
         
@@ -75,7 +75,7 @@ while playing:
             if data:
                 spirit_list.append(spirit_dict[data[1]](data[0]))
                 spirit_list[-1].set_frame()
-
+        i.change_frame(dt)
         i.draw(screen)
 
     for i in spirit_list:

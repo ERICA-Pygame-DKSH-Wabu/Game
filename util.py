@@ -15,7 +15,7 @@ def set_im(image, width, height,alpha,flip):
         pygame.transform.flip(im, True, False)
     return im
 
-def get_frame(folder_path, width, height, alpha,flip):
+def get_frame(folder_path, width, height, alpha):
     base_path = os.path.dirname(__file__)
     full_folder_path = os.path.join(base_path, folder_path)
 
