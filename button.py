@@ -64,7 +64,7 @@ class Store_Button(Button):
     def draw(self, screen):
         screen.blit(self.im, (self.hitbox.centerx-self.im.get_width()//2,self.hitbox.centery-self.im.get_height()//2))
         screen.blit(self.string_im[ 1 if self.dragging else 0], (self.original_pos[0]-self.string_im[ 1 if self.dragging else 0].get_width()//2,self.original_pos[1]-self.string_im[ 1 if self.dragging else 0].get_height()//5*2))
-        #pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 2)
+        pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 2)
 
     def change_frame(self,dt):
         self.im=self.frame[int(self.frame_index)]

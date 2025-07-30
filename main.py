@@ -22,7 +22,7 @@ spirit_dict={
 pygame.display.set_caption("forest witch")
 
 spirit_list=[]
-effect_l=[]
+effect_list=[]
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -31,19 +31,35 @@ GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
 BLACK = (0, 0, 0)
 
-spirit_pos_l = []
+spirit_pos_list = []
+monster_pos_list = []
+store_btn_list=[]
+located_rect = []
 
 for i in range(6):
     for j in range(4):
-        x = i * 80 + j * 30 + 120
-        y = screen_height - (j + 1) * 80 - 20
-        rect = pygame.Rect(x, y, 30, 30)
-        spirit_pos_l.append(rect)
+        x = i * 120 + j * 15 + 140
+        y = screen_height - (j + 1) * 100 - 50
+        rect = pygame.Rect(x, y, 40, 40)
+        spirit_pos_list.append(rect)
+
+# for i in range(6):
+#     for j in range(4):
+#         x = i * 80 + j * 30 + 120
+#         y = screen_height - (j + 1) * 80 - 20
+#         rect = pygame.Rect(x, y, 30, 30)
+#         spirit_pos_list.append(rect)
+
+for i in range(4):
+    for j in range(4):
+        x = i * 100 + j * 15 + 880
+        y = screen_height - (j + 1) * 100 - 50
+        rect = pygame.Rect(x, y, 40, 40)
+        monster_pos_list.append(rect)
         
-store_btn_l=[]
 
 for i in  range(6):
-    store_btn_l.append(Store_Button(screen_width-100*i-100,50,pygame.rect.Rect(screen_width-100*i-100,50,50,50),spirit_type[i]))
+    store_btn_list.append(Store_Button(screen_width-100*i-100,50,pygame.rect.Rect(screen_width-100*i-100,60,70,80),spirit_type[i]))
 
 fps = pygame.time.Clock()
 playing = True
@@ -54,29 +70,36 @@ while playing:
     mouse_condition = pygame.mouse.get_pressed()
     screen.fill(WHITE)
 
-    for i in spirit_pos_l:
-        pygame.draw.rect(screen, (0, 0, 0), i)
+    for i in spirit_pos_list:
+        pygame.draw.rect(screen, BLACK, i)
 
-    # 드래그 중인 버튼 찾기
+    for i in monster_pos_list:
+        pygame.draw.rect(screen, RED, i)
+
     dragging_btn = None
-    for btn in store_btn_l:
+    for btn in store_btn_list:
         if btn.dragging:
             dragging_btn = btn
             break
 
-    for i in store_btn_l:
+    for i in store_btn_list:
         i.set_hitbox()
         if dragging_btn is None:
-            data = i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_l)
+            data = i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
             if data:
                 spirit_list.append(spirit_dict[data[1]](data[0]))
                 spirit_list[-1].set_frame()
         elif i is dragging_btn:
-            data = i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_l)
+            data = i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
             if data:
-                effect_l.append(effect(data[0].centerx,data[0].centery,smoke_effect_l))
-                spirit_list.append(spirit_dict[data[1]](data[0]))
-                spirit_list[-1].set_frame()
+                if data[0] in located_rect:
+                    break
+                else:
+                    located_rect.append(data[0])
+                    effect_list.append(effect(data[0].centerx,data[0].centery,smoke_effect_l))
+                    spirit_list.append(spirit_dict[data[1]](data[0]))
+                    spirit_list[-1].set_frame()
+
         i.change_frame(dt)
         i.draw(screen)
 
@@ -92,10 +115,11 @@ while playing:
             i.change_condition()
         i.change_frame(dt)
         i.draw(screen)
-    for effects in effect_l:
+        
+    for effects in effect_list:
         effects.draw(screen)
         if effects.change_frame(dt):
-            effect_l=[ i for i in effect_l if not i==effects]
+            effect_list=[ i for i in effect_list if not i==effects]
         
 
     for event in pygame.event.get():
