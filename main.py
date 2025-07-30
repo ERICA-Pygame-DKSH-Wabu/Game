@@ -81,6 +81,15 @@ while playing:
         i.draw(screen)
 
     for i in spirit_list:
+        if mouse_condition[0]:
+            i.condition="attack"
+            i.change_condition()
+        elif mouse_condition[1]:
+            i.condition="idle"
+            i.change_condition()
+        elif mouse_condition[2]:
+            i.condition="spin"
+            i.change_condition()
         i.change_frame(dt)
         i.draw(screen)
     for effects in effect_l:

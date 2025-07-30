@@ -32,8 +32,12 @@ class Store_Button(Button):
         self.im = self.frame[0]
         
 
-        self.string_im=get_im("asset/ui/string.png")
-        self.string_im=set_im(self.string_im,self.im_size,self.im_size,255,True)
+        self.string_im=[]
+        self.string_im.append(get_im("asset/ui/string.png"))
+        self.string_im[0]=set_im(self.string_im[0],self.im_size,self.im_size,255,True)
+
+        self.string_im.append(get_im("asset/ui/string2.png"))
+        self.string_im[1]=set_im(self.string_im[1],self.im_size,self.im_size,255,True)
 
 
     def set_hitbox(self):
@@ -59,7 +63,7 @@ class Store_Button(Button):
 
     def draw(self, screen):
         screen.blit(self.im, (self.hitbox.centerx-self.im.get_width()//2,self.hitbox.centery-self.im.get_height()//2))
-        screen.blit(self.string_im, (self.original_pos[0]-self.string_im.get_width()//2,self.original_pos[1]-self.string_im.get_height()//5*2))
+        screen.blit(self.string_im[ 1 if self.dragging else 0], (self.original_pos[0]-self.string_im[ 1 if self.dragging else 0].get_width()//2,self.original_pos[1]-self.string_im[ 1 if self.dragging else 0].get_height()//5*2))
         #pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 2)
 
     def change_frame(self,dt):

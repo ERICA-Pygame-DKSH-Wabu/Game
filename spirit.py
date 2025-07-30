@@ -18,6 +18,7 @@ class Spirit():
         self.ct=0
         self.frame_index=0
         self.im_size=0
+        self.frame_speed=1
 
     def draw(self,screen):
         screen.blit(self.img,(self.hitbox.centerx-self.img.get_width()//2,self.hitbox.centery-self.img.get_height()//2))
@@ -31,11 +32,11 @@ class Spirit():
 
     def change_frame(self,dt):
         self.img=self.frame[self.condition][int(self.frame_index)]
-        if len(self.frame[self.condition]) <= int(self.frame_index+0.01*dt) :
+        if len(self.frame[self.condition]) <= int(self.frame_index+0.01*dt*self.frame_speed) :
             self.frame_index=0
         else:
-            self.frame_index+=0.01*dt
-    def if_change_condition(self):
+            self.frame_index+=0.01*dt*self.frame_speed
+    def change_condition(self):
         self.frame_index=0
 
 class Water_Spirit(Spirit):
@@ -56,11 +57,19 @@ class Stone_Spirit(Spirit):
         self.name = "stone"
         self.im_size=120
 
+
 class Fire_Spirit(Spirit):
     def __init__(self, pos):
         super().__init__(pos)
         self.name = "fire"
         self.im_size=130
+        self.frame_speed=1.5
+    def set_frame(self):
+        self.frame={
+            "attack": get_frame(f"asset/spirit/{self.name}/attack",self.im_size*1.2,self.im_size*1.2,255),
+            "idle": get_frame(f"asset/spirit/{self.name}/idle",self.im_size*1.05,self.im_size*1.05,255),
+            "spin": get_frame(f"asset/spirit/{self.name}/spin",self.im_size*1.2,self.im_size*1.2,255)
+        }
 
 class Dark_Spirit(Spirit):
     def __init__(self, pos):
