@@ -38,6 +38,7 @@ YELLOW = (255, 255, 0)
 BLACK = (0, 0, 0)
 
 spirit_list=[]
+monster_list=[]
 effect_list=[]
 spirit_pos_list = []
 monster_pos_list = []
@@ -84,26 +85,20 @@ for i in  range(6):
 fps = pygame.time.Clock()
 playing = True
 
-fps = pygame.time.Clock()
-playing = True
-
-# 시작 시 wave 1 자동 배치
-update_wave(wave_data, 0, monster_pos_list)
-
 while playing:
     dt = fps.tick(60)
     mouse_pos_x, mouse_pos_y = pygame.mouse.get_pos()
     mouse_condition = pygame.mouse.get_pressed()
     screen.fill(WHITE)
 
-    # 정령/몬스터 배치 위치 표시
     for i in spirit_pos_list:
         pygame.draw.rect(screen, BLACK, i)
+
     for i in monster_pos_list:
         pygame.draw.rect(screen, RED, i)
-    for m in get_monsters():
-        m.draw(screen)
 
+    for m in monster_list:
+        m.draw(screen)
 
     dragging_btn = None
     for btn in store_btn_list:
@@ -125,9 +120,10 @@ while playing:
                     break
                 else:
                     located_rect.append(data[0])
-                    effect_list.append(effect(data[0].centerx, data[0].centery, smoke_effect_l))
+                    effect_list.append(effect(data[0].centerx,data[0].centery,smoke_effect_l))
                     spirit_list.append(spirit_dict[data[1]](data[0]))
                     spirit_list[-1].set_frame()
+
         i.change_frame(dt)
         i.draw(screen)
 
@@ -141,26 +137,19 @@ while playing:
         elif mouse_condition[2]:
             i.condition="spin"
             i.change_condition()
-            
         i.change_frame(dt)
         i.draw(screen)
-
+        
     for effects in effect_list:
         effects.draw(screen)
         if effects.change_frame(dt):
-            effect_list = [i for i in effect_list if i != effects]
+            effect_list=[ i for i in effect_list if not i==effects]
+        
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             playing = False
 
-        elif event.type == pygame.KEYDOWN:
-            if pygame.K_1 <= event.key <= pygame.K_9:
-                wave_num = event.key - pygame.K_0
-                if 1 <= wave_num <= len(wave_data):
-                    update_wave(wave_data, wave_num - 1, monster_pos_list)
-
     pygame.display.flip()
 
 pygame.quit()
-
