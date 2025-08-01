@@ -30,12 +30,14 @@ class Spirit():
             "spin": get_frame(f"asset/spirit/{self.name}/spin",self.im_size,self.im_size,255)
         }
 
+
     def change_frame(self,dt):
         self.img=self.frame[self.condition][int(self.frame_index)]
         if len(self.frame[self.condition]) <= int(self.frame_index+0.01*dt*self.frame_speed) :
             self.frame_index=0
         else:
             self.frame_index+=0.01*dt*self.frame_speed
+
     def change_condition(self):
         self.frame_index=0
 
@@ -43,29 +45,25 @@ class Water_Spirit(Spirit):
     def __init__(self, pos):
         super().__init__(pos)
         self.name = "water"
-        self.im_size=126
-        #self.im_size=96
+        self.im_size=96
 
 class Light_Spirit(Spirit):
     def __init__(self, pos):
         super().__init__(pos)
         self.name = "light"
-        self.im_size=150
-        #self.im_size=120
+        self.im_size=120
 
 class Stone_Spirit(Spirit):
     def __init__(self, pos):
         super().__init__(pos)
         self.name = "stone"
-        self.im_size=150
-        #self.im_size=120
+        self.im_size=120
 
 class Fire_Spirit(Spirit):
     def __init__(self, pos):
         super().__init__(pos)
         self.name = "fire"
-        self.im_size=160
-        #self.im_size=130
+        self.im_size=130
         self.frame_speed=1.5
     def set_frame(self):
         self.frame={
@@ -78,12 +76,10 @@ class Dark_Spirit(Spirit):
     def __init__(self, pos):
         super().__init__(pos)
         self.name = "dark"
-        self.im_size=150
-        #self.im_size=120
+        self.im_size=120
 
 class Grass_Spirit(Spirit):
     def __init__(self, pos):
         super().__init__(pos)
         self.name = "grass"
-        self.im_size=174
-        #self.im_size=144
+        self.im_size=144

@@ -9,7 +9,7 @@ from monster import *
 with open("story_wave.json", "r", encoding="utf-8") as f:
     wave_data = json.load(f)
 
-wave1 = wave_data[0] #임시
+wave_loaded = False
 
 pygame.init()
 spirit_type=["water","fire","grass","light","stone","dark"]
@@ -25,6 +25,15 @@ spirit_dict={
     "stone":Stone_Spirit,
     "light": Light_Spirit,
     "dark":Dark_Spirit
+}
+
+monster_dict={
+    "water": Water_Monster,
+    "fire":Fire_Monster,
+    "grass":Grass_Monster,
+    "stone":Stone_Monster,
+    "light": Light_Monster,
+    "dark":Dark_Monster
 }
 
 pygame.display.set_caption("forest witch")
@@ -44,44 +53,25 @@ spirit_pos_list = []
 monster_pos_list = []
 store_btn_list=[]
 located_rect = []
-
+ 
 for i in range(6):
     for j in range(4):
-        x = i * 120 + j * 15 + 140
-        y = screen_height - (j + 1) * 100 - 50
-        rect = pygame.Rect(x, y, 40, 40)
+        x = i * 80 + j * 30 + 120
+        y = screen_height - (j + 1) * 80 - 20
+        rect = pygame.Rect(x, y, 30, 30)
         spirit_pos_list.append(rect)
-
-# for i in range(6):
-#     for j in range(4):
-#         x = i * 80 + j * 30 + 120
-#         y = screen_height - (j + 1) * 80 - 20
-#         rect = pygame.Rect(x, y, 30, 30)
-#         spirit_pos_list.append(rect)
 
 for i in range(4):
     for j in range(4):
-        x = i * 100 + j * 15 + 880
-        y = screen_height - (j + 1) * 100 - 50
-        rect = pygame.Rect(x, y, 40, 40)
+        x = i * 80 + j * 30 + 880
+        y = screen_height - (j + 1) * 80 - 20
+        rect = pygame.Rect(x, y, 30, 30)
         monster_pos_list.append(rect)
 
-for idx in range(1, 5):  # index_1 ~ index_4
-    key = f"index_{idx}"
-    if key in wave1:
-        for k, m_type in enumerate(wave1[key]):
-            # k: y좌표(행), idx-1: x좌표(열)
-            pos_index = k * 4 + (idx - 1)
-            if pos_index < len(monster_pos_list):
-                monster = Monster(monster_pos_list[pos_index], m_type)
-                monster.set_frame()
-                monster.img = monster.frame["idle"][0]  # 기본 이미지 설정
-                monster_list.append(monster)
-        
-
-for i in  range(6):
+for i in range(6):
     store_btn_list.append(Store_Button(screen_width-100*i-100,50,pygame.rect.Rect(screen_width-100*i-100,60,70,80),spirit_type[i]))
 
+wave = 3
 fps = pygame.time.Clock()
 playing = True
 
@@ -89,6 +79,7 @@ while playing:
     dt = fps.tick(60)
     mouse_pos_x, mouse_pos_y = pygame.mouse.get_pos()
     mouse_condition = pygame.mouse.get_pressed()
+    key_condition = pygame.key.get_pressed()
     screen.fill(WHITE)
 
     for i in spirit_pos_list:
@@ -127,18 +118,47 @@ while playing:
         i.change_frame(dt)
         i.draw(screen)
 
+    if not wave_loaded and wave <= len(wave_data):
+        monster_list.clear()  
+        wave_data_current = wave_data[wave - 1]  
+
+        for idx in range(1, 5):
+            key = f"index_{idx}"
+            if key in wave_data_current:
+                for k, m_type in enumerate(wave_data_current[key]):
+                    pos_index = k * 4 + (idx - 1)
+                    if pos_index < len(monster_pos_list):
+                        monster_list.append(monster_dict[m_type](monster_pos_list[pos_index]))
+                        monster_list[-1].set_frame()
+
+        wave_loaded = True
+
     for i in spirit_list:
-        if mouse_condition[0]:
+        if key_condition[pygame.K_1]:
             i.condition="attack"
             i.change_condition()
-        elif mouse_condition[1]:
+        elif key_condition[pygame.K_2]:
             i.condition="idle"
             i.change_condition()
-        elif mouse_condition[2]:
+        elif key_condition[pygame.K_3]:
             i.condition="spin"
             i.change_condition()
         i.change_frame(dt)
         i.draw(screen)
+
+    for i in monster_list:
+        if key_condition[pygame.K_1]:
+            i.condition="attack"
+            i.change_condition()
+        elif key_condition[pygame.K_2]:
+            i.condition="idle"
+            i.change_condition()
+        elif key_condition[pygame.K_3]:
+            i.condition="spin"
+            i.change_condition()
+        i.change_frame(dt)
+        i.draw(screen)
+
         
     for effects in effect_list:
         effects.draw(screen)
