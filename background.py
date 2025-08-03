@@ -13,6 +13,5 @@ class Background:
             self.lines.append(((0, y), (800, y), (200, 200, 200), 1))
 
     def draw(self, screen):
-        """모든 선 그리기"""
         for start, end, color, width in self.lines:
             pygame.draw.line(screen, color, start, end, width)

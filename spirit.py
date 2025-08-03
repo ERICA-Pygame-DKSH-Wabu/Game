@@ -1,8 +1,8 @@
 from util import *
 
 class Spirit():
-    def __init__(self,pos):
-        self.name=""
+    def __init__(self,pos, name =""):
+        self.name=name
         self.frame={}
         self.condition="idle"
         self.img=None
