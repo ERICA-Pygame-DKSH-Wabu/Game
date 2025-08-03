@@ -5,6 +5,7 @@ from button import *
 from spirit import *
 from effect import *
 from monster import *
+from background import *
 
 with open("story_wave.json", "r", encoding="utf-8") as f:
     wave_data = json.load(f)
