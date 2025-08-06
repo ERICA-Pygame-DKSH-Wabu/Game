@@ -62,9 +62,9 @@ all_monsters_arrived = False
  
 for i in range(6):
     for j in range(4):
-        x = i * 80 + j * 30 + 120
-        y = screen_height - (j + 1) * 80 - 20
-        rect = pygame.Rect(x, y, 30, 30)
+        x = i * 80 + j * 25 + 270
+        y = screen_height - (j + 1) * 60 - 40
+        rect = pygame.Rect(x, y, 24, 24)
         spirit_pos_list.append(rect)
 
 for i in range(4):
@@ -78,6 +78,9 @@ for i in range(4):
 
 for i in range(6):
     store_btn_list.append(Store_Button(screen_width-100*i-100,50,pygame.rect.Rect(screen_width-100*i-100,60,70,80),spirit_type[i]))
+
+background_im=get_im("asset/ui/background.jpg")
+background_im=set_im(background_im, 1280, 640,256,True)
 
 wave = 1  
 fps = pygame.time.Clock()
@@ -117,6 +120,7 @@ while playing:
     key_condition = pygame.key.get_pressed()
     screen.fill(WHITE)
 
+    screen.blit(background_im,(0,0))
     for i in spirit_pos_list:
         pygame.draw.rect(screen, BLACK, i)
 
@@ -192,6 +196,7 @@ while playing:
         effects.draw(screen)
         if effects.change_frame(dt):
             effect_list = [i for i in effect_list if not i == effects]
+
 
     if all_monsters_arrived and key_condition[pygame.K_SPACE]:
         wave += 1
