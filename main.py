@@ -121,38 +121,10 @@ while playing:
     screen.fill(WHITE)
 
     screen.blit(background_im,(0,0))
-    for i in spirit_pos_list:
-        pygame.draw.rect(screen, BLACK, i)
 
     for j in itertools.chain.from_iterable(monster_pos_list):
         pygame.draw.rect(screen, RED, j)
 
-    dragging_btn = None
-    for btn in store_btn_list:
-        if btn.dragging:
-            dragging_btn = btn
-            break
-
-    for i in store_btn_list:
-        i.set_hitbox()
-        if dragging_btn is None:
-            data = i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
-            if data:
-                spirit_list.append(spirit_dict[data[1]](data[0]))
-                spirit_list[-1].set_frame()
-        elif i is dragging_btn:
-            data = i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
-            if data:
-                if data[0] in located_rect:
-                    break
-                else:
-                    located_rect.append(data[0])
-                    effect_list.append(effect(data[0].centerx,data[0].centery,smoke_effect_l))
-                    spirit_list.append(spirit_dict[data[1]](data[0]))
-                    spirit_list[-1].set_frame()
-
-        i.change_frame(dt)
-        i.draw(screen)
 
     if not wave_loaded and wave <= len(wave_data):
         monster_list.clear()
@@ -197,6 +169,33 @@ while playing:
         if effects.change_frame(dt):
             effect_list = [i for i in effect_list if not i == effects]
 
+    dragging_btn = None
+    for btn in store_btn_list:
+        if btn.dragging:
+            dragging_btn = btn
+            break
+
+    for i in store_btn_list:
+        i.set_hitbox()
+        if dragging_btn is None:
+            data = i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
+            if data:
+                spirit_list.append(spirit_dict[data[1]](data[0]))
+                spirit_list[-1].set_frame()
+        elif i is dragging_btn:
+            data = i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
+            if data:
+                if data[0] in located_rect:
+                    break
+                else:
+                    located_rect.append(data[0])
+                    effect_list.append(effect(data[0].centerx,data[0].centery,smoke_effect_l))
+                    spirit_list.append(spirit_dict[data[1]](data[0]))
+                    spirit_list[-1].set_frame()
+                    spirit_list = sorted(spirit_list, key=lambda obj: obj.hitbox.centery)
+
+        i.change_frame(dt)
+        i.draw(screen)
 
     if all_monsters_arrived and key_condition[pygame.K_SPACE]:
         wave += 1
@@ -222,7 +221,6 @@ while playing:
     for i, text in enumerate(info_texts):
         info_surface = info_font.render(text, True, BLACK)
         screen.blit(info_surface, (10, 50 + i * 25))
-
     pygame.display.flip()
 
 pygame.quit()
