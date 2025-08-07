@@ -54,10 +54,10 @@ class Store_Button(Button):
             else:
                 self.dragging = False
                 self.x, self.y = self.original_pos
-                for rect in spirit_pos_l:
-                    if self.hitbox.colliderect(rect):
+                for i in spirit_pos_l:
+                    if self.hitbox.colliderect(i.rect):
                         self.set_hitbox()
-                        return (rect, self.s_type)
+                        return (i.rect, self.s_type,i.pos)
                 self.set_hitbox()
                 return False
 

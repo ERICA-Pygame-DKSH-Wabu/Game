@@ -19,11 +19,11 @@ class Spirit():
         self.frame_index=0
         self.im_size=0
         self.frame_speed=1
+        self.enemy_circle_surface = pygame.Surface((self.hitbox.width+10,25), pygame.SRCALPHA)
+        pygame.draw.ellipse(self.enemy_circle_surface, (0,0,0,96), (0,0,self.hitbox.width+10,25))
 
     def draw(self,screen):
-        enemy_circle_surface = pygame.Surface((self.hitbox.width+10,25), pygame.SRCALPHA)
-        pygame.draw.ellipse(enemy_circle_surface, (0,0,0,96), (0,0,self.hitbox.width+10,25))
-        screen.blit(enemy_circle_surface, (self.hitbox.centerx-(self.hitbox.width+10)//2,self.hitbox.bottom-5))
+        screen.blit(self.enemy_circle_surface, (self.hitbox.centerx-(self.hitbox.width+10)//2,self.hitbox.bottom-5))
 
         screen.blit(self.img,(self.hitbox.centerx-self.img.get_width()//2,self.hitbox.centery-self.img.get_height()//2))
 

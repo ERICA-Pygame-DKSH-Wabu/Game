@@ -1,6 +1,7 @@
 import json
 import pygame
 import itertools
+from pos import *
 from util import *
 from button import *
 from spirit import *
@@ -47,7 +48,7 @@ GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
 BLACK = (0, 0, 0)
 
-spirit_list=[]
+spirit_list=[[False for i in range(6)] for j in range(4)]
 monster_list=[]
 effect_list=[]
 spirit_pos_list = []
@@ -65,7 +66,7 @@ for i in range(6):
         x = i * 80 + j * 25 + 270
         y = screen_height - (j + 1) * 60 - 40
         rect = pygame.Rect(x, y, 24, 24)
-        spirit_pos_list.append(rect)
+        spirit_pos_list.append(Pos(rect,(i,3-j)))
 
 for i in range(4):
     monster_pos_list_temp = []
@@ -138,17 +139,19 @@ while playing:
         spawn_monsters_gradually(wave_data[wave - 1], current_time)
 
     for i in spirit_list:
-        if key_condition[pygame.K_1]:
-            i.condition="attack"
-            i.change_condition()
-        elif key_condition[pygame.K_2]:
-            i.condition="idle"
-            i.change_condition()
-        elif key_condition[pygame.K_3]:
-            i.condition="spin"
-            i.change_condition()
-        i.change_frame(dt)
-        i.draw(screen)
+        for j in i:
+            if j:
+                if key_condition[pygame.K_1]:
+                    j.condition="attack"
+                    j.change_condition()
+                elif key_condition[pygame.K_2]:
+                    j.condition="idle"
+                    j.change_condition()
+                elif key_condition[pygame.K_3]:
+                    j.condition="spin"
+                    j.change_condition()
+                j.change_frame(dt)
+                j.draw(screen)
 
     for i in monster_list:
         if key_condition[pygame.K_4]:
@@ -190,9 +193,8 @@ while playing:
                 else:
                     located_rect.append(data[0])
                     effect_list.append(effect(data[0].centerx,data[0].centery,smoke_effect_l))
-                    spirit_list.append(spirit_dict[data[1]](data[0]))
-                    spirit_list[-1].set_frame()
-                    spirit_list = sorted(spirit_list, key=lambda obj: obj.hitbox.centery)
+                    spirit_list[data[2][1]][data[2][0]]=(spirit_dict[data[1]](data[0]))
+                    spirit_list[data[2][1]][data[2][0]].set_frame()
 
         i.change_frame(dt)
         i.draw(screen)
@@ -222,5 +224,4 @@ while playing:
         info_surface = info_font.render(text, True, BLACK)
         screen.blit(info_surface, (10, 50 + i * 25))
     pygame.display.flip()
-
 pygame.quit()
