@@ -20,12 +20,12 @@ class Spirit():
         self.im_size=0
         self.frame_speed=1
         self.enemy_circle_surface = pygame.Surface((self.hitbox.width+10,25), pygame.SRCALPHA)
+        self.y_gap=0
         pygame.draw.ellipse(self.enemy_circle_surface, (0,0,0,96), (0,0,self.hitbox.width+10,25))
 
     def draw(self,screen):
-        screen.blit(self.enemy_circle_surface, (self.hitbox.centerx-(self.hitbox.width+10)//2,self.hitbox.bottom-5))
-
-        screen.blit(self.img,(self.hitbox.centerx-self.img.get_width()//2,self.hitbox.centery-self.img.get_height()//2))
+        screen.blit(self.enemy_circle_surface, (self.hitbox.centerx-(self.hitbox.width+10)//2+3,self.hitbox.bottom-25))
+        screen.blit(self.img,(self.hitbox.centerx-self.img.get_width()//2+3,self.hitbox.centery-self.img.get_height()//2-20-self.y_gap))
 
     def set_frame(self):
         self.frame={
@@ -50,6 +50,7 @@ class Water_Spirit(Spirit):
         super().__init__(pos)
         self.name = "water"
         self.im_size=96
+        self.y_gap=-10
 
 class Light_Spirit(Spirit):
     def __init__(self, pos):
@@ -62,6 +63,7 @@ class Stone_Spirit(Spirit):
         super().__init__(pos)
         self.name = "stone"
         self.im_size=120
+        self.y_gap = 5
 
 class Fire_Spirit(Spirit):
     def __init__(self, pos):
@@ -69,6 +71,7 @@ class Fire_Spirit(Spirit):
         self.name = "fire"
         self.im_size=130
         self.frame_speed=1.5
+        self.y_gap = 5
     def set_frame(self):
         self.frame={
             "attack": get_frame(f"asset/spirit/{self.name}/attack",self.im_size*1.2,self.im_size*1.2,255),

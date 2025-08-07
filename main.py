@@ -60,20 +60,21 @@ wave_start_time = 0
 wave_spawn_delay = 500  
 monsters_spawned = 0
 all_monsters_arrived = False
+debug_mod = True
  
 for i in range(6):
     for j in range(4):
-        x = i * 80 + j * 25 + 270
-        y = screen_height - (j + 1) * 60 - 40
+        x = i * 82 + j * 25 + 270
+        y = screen_height - (j + 1) * 60 - 15
         rect = pygame.Rect(x, y, 24, 24)
         spirit_pos_list.append(Pos(rect,(i,3-j)))
 
 for i in range(4):
     monster_pos_list_temp = []
     for j in range(4):
-        x = i * 80 + j * 30 + 880
-        y = screen_height - (j + 1) * 80 - 20
-        rect = pygame.Rect(x, y, 30, 30)
+        x = i * 82 + j * 25 + 880
+        y = screen_height - (j + 1) * 60 - 15
+        rect = pygame.Rect(x, y, 24, 24)
         monster_pos_list_temp.append(rect)
     monster_pos_list.append(monster_pos_list_temp)
 
@@ -88,7 +89,6 @@ fps = pygame.time.Clock()
 playing = True
 
 def spawn_monsters_gradually(wave_data_current, current_time):
-    """몬스터를 점진적으로 스폰하는 함수"""
     global monsters_spawned, wave_start_time, all_monsters_arrived
     
     if monsters_spawned >= sum(len(wave_data_current.get(f"index_{i}", [])) for i in range(1, 5)):
@@ -113,6 +113,7 @@ def spawn_monsters_gradually(wave_data_current, current_time):
                         return
                 monster_count += 1
 
+
 while playing:
     dt = fps.tick(60)
     current_time = pygame.time.get_ticks()
@@ -123,8 +124,6 @@ while playing:
 
     screen.blit(background_im,(0,0))
 
-    for j in itertools.chain.from_iterable(monster_pos_list):
-        pygame.draw.rect(screen, RED, j)
 
 
     if not wave_loaded and wave <= len(wave_data):
@@ -205,27 +204,42 @@ while playing:
         if wave > len(wave_data):
             wave = 1  
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            playing = False
 
-    font = pygame.font.Font(None, 36)
-    wave_text = font.render(f"Wave: {wave}", True, BLACK)
-    screen.blit(wave_text, (10, 10))
-    
-    info_font = pygame.font.Font(None, 24)
-    info_texts = [
-        "1,2,3: Spirit states (attack, idle, spin)",
-        "4,5,6: Monster states (attack, idle, spin)", 
-        "SPACE: Next wave (when all monsters arrived)",
-        f"Monsters arrived: {sum(1 for m in monster_list if m.has_arrived)}/{len(monster_list)}"
-    ]
 
     if wave > 1:
         background_im=get_im("asset/ui/background_2.jpg")
+        background_im=set_im(background_im, 1280, 640,256,True)
 
-    for i, text in enumerate(info_texts):
-        info_surface = info_font.render(text, True, BLACK)
-        screen.blit(info_surface, (10, 50 + i * 25))
+    font = pygame.font.Font(None, 36)
+
+    if debug_mod:
+        wave_text = font.render(f"Wave: {wave}", True, BLACK)
+        screen.blit(wave_text, (10, 10))
+        
+        info_font = pygame.font.Font(None, 24)
+        info_texts = [
+            "1,2,3: Spirit states (attack, idle, spin)",
+            "4,5,6: Monster states (attack, idle, spin)", 
+            "SPACE: Next wave (when all monsters arrived)",
+            f"Monsters arrived: {sum(1 for m in monster_list if m.has_arrived)}/{len(monster_list)}"
+        ]
+
+        for i in range(24):
+            pygame.draw.rect(screen, BLUE, spirit_pos_list[i].get_rect())
+
+        for j in itertools.chain.from_iterable(monster_pos_list):
+            pygame.draw.rect(screen, RED, j)
+
+        for i, text in enumerate(info_texts):
+            info_surface = info_font.render(text, True, BLACK)
+            screen.blit(info_surface, (10, 50 + i * 25))
+            
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            playing = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_d:
+                debug_mod = not debug_mod
+
     pygame.display.flip()
 pygame.quit()
