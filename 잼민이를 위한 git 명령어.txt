@@ -22,3 +22,18 @@ git checkout 브랜치명
 개발 구역 : develop/kwk, develop/hjs
 
 각자 개발구역에서 개발하고 회의떄 확인하고 main에 반영
+
+
+디코 회의 떄 상의 후 할것!!!!!!!
+
+# 1. main 브랜치로 이동
+git checkout main
+
+# 2. 최신 상태로 업데이트 (optional but recommended)
+git pull origin main
+
+# 3. develop/kwk 브랜치 병합
+git merge develop/kwk
+
+# 4. 병합 후 푸시
+git push origin main
