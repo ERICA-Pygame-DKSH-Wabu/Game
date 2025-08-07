@@ -112,7 +112,6 @@ def spawn_monsters_gradually(wave_data_current, current_time):
                         monsters_spawned += 1
                         return
                 monster_count += 1
-
 while playing:
     dt = fps.tick(60)
     current_time = pygame.time.get_ticks()
@@ -193,7 +192,7 @@ while playing:
                 else:
                     located_rect.append(data[0])
                     effect_list.append(effect(data[0].centerx,data[0].centery,smoke_effect_l))
-                    spirit_list[data[2][1]][data[2][0]]=(spirit_dict[data[1]](data[0]))
+                    spirit_list[data[2][1]][data[2][0]]=spirit_dict[data[1]](data[0])
                     spirit_list[data[2][1]][data[2][0]].set_frame()
 
         i.change_frame(dt)

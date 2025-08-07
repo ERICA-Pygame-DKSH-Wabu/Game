@@ -2,7 +2,7 @@
 
 git add .
 git commit -m "메시지"
-git push -u origin main
+git push -u origin main 
 
 변경사항 반영받는 법 (레포지토리 -> 지성)
 
