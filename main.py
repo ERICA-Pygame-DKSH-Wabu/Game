@@ -80,7 +80,7 @@ for i in range(4):
 for i in range(6):
     store_btn_list.append(Store_Button(screen_width-100*i-100,50,pygame.rect.Rect(screen_width-100*i-100,60,70,80),spirit_type[i]))
 
-background_im=get_im("asset/ui/background.jpg")
+background_im=get_im("asset/ui/background_1.jpg")
 background_im=set_im(background_im, 1280, 640,256,True)
 
 wave = 1  
@@ -220,6 +220,10 @@ while playing:
         "SPACE: Next wave (when all monsters arrived)",
         f"Monsters arrived: {sum(1 for m in monster_list if m.has_arrived)}/{len(monster_list)}"
     ]
+
+    if wave > 1:
+        background_im=get_im("asset/ui/background_2.jpg")
+
     for i, text in enumerate(info_texts):
         info_surface = info_font.render(text, True, BLACK)
         screen.blit(info_surface, (10, 50 + i * 25))
