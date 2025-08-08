@@ -90,8 +90,9 @@ class Stone_Monster(Monster):
 class Fire_Monster(Monster):
     def __init__(self, pos):
         super().__init__(pos, "fire")
-        self.im_size = 130
-        self.frame_speed = 1.5
+        self.im_size = 90
+        self.y_gap = -12
+        self.frame_speed = 1.0
 
 class Dark_Monster(Monster):
     def __init__(self, pos):
@@ -101,4 +102,5 @@ class Dark_Monster(Monster):
 class Grass_Monster(Monster):
     def __init__(self, pos):
         super().__init__(pos, "grass")
-        self.im_size = 144
+        self.im_size = 110
+        self.y_gap = -5
