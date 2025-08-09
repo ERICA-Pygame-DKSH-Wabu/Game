@@ -1,14 +1,16 @@
 from util import *
 
 class Spirit():
-    def __init__(self,pos, name =""):
+    def __init__(self,pos,index, name=""):
+        self.line=index
+        self.distance=0
+        self.target=False
         self.name=name
         self.frame={}
         self.condition="idle"
         self.img=None
         self.hitbox=pygame.rect.Rect(0,0,50,50)
-        self.hitbox.center=pos.center
-
+        self.attack_speed=1
         self.max_health=0
         self.health=0
         self.length=0
@@ -20,12 +22,16 @@ class Spirit():
         self.im_size=0
         self.frame_speed=1
         self.enemy_circle_surface = pygame.Surface((self.hitbox.width+10,25), pygame.SRCALPHA)
-        self.y_gap=0
         pygame.draw.ellipse(self.enemy_circle_surface, (0,0,0,96), (0,0,self.hitbox.width+10,25))
 
+    def set_target(self,target_l):
+        self.target=min(target_l, key=lambda obj: obj.hitbox.centerx)
+    
+
     def draw(self,screen):
-        screen.blit(self.enemy_circle_surface, (self.hitbox.centerx-(self.hitbox.width+10)//2+3,self.hitbox.bottom-25))
-        screen.blit(self.img,(self.hitbox.centerx-self.img.get_width()//2+3,self.hitbox.centery-self.img.get_height()//2-20-self.y_gap))
+        screen.blit(self.enemy_circle_surface, (self.hitbox.centerx-(self.hitbox.width+10)//2,self.hitbox.bottom-5))
+
+        screen.blit(self.img,(self.hitbox.centerx-self.img.get_width()//2,self.hitbox.centery-self.img.get_height()//2))
 
     def set_frame(self):
         self.frame={
@@ -33,45 +39,63 @@ class Spirit():
             "idle": get_frame(f"asset/spirit/{self.name}/idle",self.im_size,self.im_size,255),
             "spin": get_frame(f"asset/spirit/{self.name}/spin",self.im_size,self.im_size,255)
         }
-
+    def set_condition(self):
+        if abs(self.hitbox.centerx-self.target_pos) > self.distance:
+            if self.reroad:
+                self.condition="attack"
+            else:
+                self.condition="spin"
+        else:
+            self.condition="idle"
 
     def change_frame(self,dt):
-        self.img=self.frame[self.condition][int(self.frame_index)]
-        if len(self.frame[self.condition]) <= int(self.frame_index+0.01*dt*self.frame_speed) :
-            self.frame_index=0
-        else:
-            self.frame_index+=0.01*dt*self.frame_speed
-
+        frame= 0.01 * dt * self.frame_speed*self.attack_speed
+        if self.condition in self.frame:
+            self.img = self.frame[self.condition][int(self.frame_index)]
+            if len(self.frame[self.condition]) <= int(self.frame_index + frame):
+                self.frame_index = 0
+                if self.condition=="spin":
+                    self.reroad=True
+                elif self.condition=="attack":
+                    self.reroad=False
+            else:
+                self.frame_index += frame
     def change_condition(self):
         self.frame_index=0
 
+    def get_pos(self):
+        return(self.pos)
+
+
+
 class Water_Spirit(Spirit):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos,index):
+        super().__init__(pos,index)
         self.name = "water"
+        self.hitbox.center=pos.center
         self.im_size=96
-        self.y_gap=-10
 
 class Light_Spirit(Spirit):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos,index):
+        super().__init__(pos,index)
         self.name = "light"
+        self.hitbox.center=pos.center
         self.im_size=120
 
 class Stone_Spirit(Spirit):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos,index):
+        super().__init__(pos,index)
         self.name = "stone"
+        self.hitbox.center=pos.center
         self.im_size=120
-        self.y_gap = 5
 
 class Fire_Spirit(Spirit):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos,index):
+        super().__init__(pos,index)
         self.name = "fire"
+        self.hitbox.center=pos.center
         self.im_size=130
         self.frame_speed=1.5
-        self.y_gap = 5
     def set_frame(self):
         self.frame={
             "attack": get_frame(f"asset/spirit/{self.name}/attack",self.im_size*1.2,self.im_size*1.2,255),
@@ -80,13 +104,15 @@ class Fire_Spirit(Spirit):
         }
 
 class Dark_Spirit(Spirit):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos,index):
+        super().__init__(pos,index)
         self.name = "dark"
+        self.hitbox.center=pos.center
         self.im_size=120
 
 class Grass_Spirit(Spirit):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos,index):
+        super().__init__(pos,index)
         self.name = "grass"
+        self.hitbox.center=pos.center
         self.im_size=120

@@ -21,24 +21,6 @@ screen_height = 640
 screen = pygame.display.set_mode((screen_width, screen_height))
 smoke_effect_l=get_frame("asset/ui/effect",120,120,150)
 
-spirit_dict={
-    "water": Water_Spirit,
-    "fire":Fire_Spirit,
-    "grass":Grass_Spirit,
-    "stone":Stone_Spirit,
-    "light": Light_Spirit,
-    "dark":Dark_Spirit
-}
-
-monster_dict={
-    "water": Water_Monster,
-    "fire":Fire_Monster,
-    "grass":Grass_Monster,
-    "stone":Stone_Monster,
-    "light": Light_Monster,
-    "dark":Dark_Monster
-}
-
 pygame.display.set_caption("forest witch")
 
 WHITE = (255, 255, 255)
@@ -49,25 +31,26 @@ YELLOW = (255, 255, 0)
 BLACK = (0, 0, 0)
 
 spirit_list=[[False for i in range(6)] for j in range(4)]
-monster_list=[]
+monster_list= [[] for i in range(4)]
 effect_list=[]
 spirit_pos_list = []
 monster_pos_list = []
 store_btn_list=[]
-located_rect = []
+located_rect = [[False for i in range(6)] for j in range(4)]
 
 wave_start_time = 0
 wave_spawn_delay = 500  
 monsters_spawned = 0
 all_monsters_arrived = False
-debug_mod = True
  
 for i in range(6):
+    spirit_pos_list_temp = []
     for j in range(4):
         x = i * 82 + j * 25 + 270
         y = screen_height - (j + 1) * 60 - 15
         rect = pygame.Rect(x, y, 24, 24)
-        spirit_pos_list.append(Pos(rect,(i,3-j)))
+        spirit_pos_list_temp.append(Pos(rect,(i,3-j)))
+    spirit_pos_list.append(spirit_pos_list_temp)
 
 for i in range(4):
     monster_pos_list_temp = []
@@ -88,11 +71,14 @@ wave = 1
 fps = pygame.time.Clock()
 playing = True
 
+def get_s_target(row,col): #몬스터 전용
+    return(spirit_pos_list[row][col].get_rect())
+
 def spawn_monsters_gradually(wave_data_current, current_time):
     global monsters_spawned, wave_start_time, all_monsters_arrived
     
     if monsters_spawned >= sum(len(wave_data_current.get(f"index_{i}", [])) for i in range(1, 5)):
-        all_monsters_arrived = all(monster.has_arrived for monster in monster_list)
+        all_monsters_arrived = all(m.has_arrived for sublist in monster_list for m in sublist)
         return
     
     if current_time - wave_start_time < monsters_spawned * wave_spawn_delay:
@@ -105,15 +91,28 @@ def spawn_monsters_gradually(wave_data_current, current_time):
             for col, m_type in enumerate(wave_data_current[key]):
                 if monster_count == monsters_spawned:
                     if col < len(monster_pos_list):
-                        new_monster = monster_dict[m_type](monster_pos_list[col][row-1])
-                        new_monster.set_target_rect(col, row-1)
-                        new_monster.set_frame()
-                        monster_list.append(new_monster)
+                        print(row,spirit_list, monster_list)
+                        if m_type=="dark":
+                            monster_list[row-1].append(Dark_Monster(row-1,get_s_target(row-1,0)))
+                        if m_type=="light":
+                            monster_list[row-1].append(Light_Monster(row-1,get_s_target(row-1,0)))
+                        if m_type=="water":
+                            monster_list[row-1].append(Water_Monster(row-1,get_s_target(row-1,0)))
+                        if m_type=="fire":
+                            monster_list[row-1].append(Fire_Monster(row-1,get_s_target(row-1,0)))
+                        if m_type=="grass":
+                            monster_list[row-1].append(Grass_Monster(row-1,get_s_target(row-1,0)))
+                        if m_type=="stone":
+                            monster_list[row-1].append(Stone_Monster(row-1,get_s_target(row-1,0)))
+                        monster_list[row-1][col].set_frame()
+
+                        # new_monster = monster_dict[m_type](monster_pos_list[col][row-1])
+                        # new_monster.set_target_rect(col, row-1)
+                        # new_monster.set_frame()
+                        # monster_list.append(new_monster)
                         monsters_spawned += 1
                         return
                 monster_count += 1
-
-
 while playing:
     dt = fps.tick(60)
     current_time = pygame.time.get_ticks()
@@ -124,10 +123,12 @@ while playing:
 
     screen.blit(background_im,(0,0))
 
+    for j in itertools.chain.from_iterable(monster_pos_list):
+        pygame.draw.rect(screen, RED, j)
 
 
     if not wave_loaded and wave <= len(wave_data):
-        monster_list.clear()
+        monster_list = [[] for i in range(4)]
         wave_data_current = wave_data[wave - 1]
         monsters_spawned = 0
         wave_start_time = current_time
@@ -149,22 +150,36 @@ while playing:
                 elif key_condition[pygame.K_3]:
                     j.condition="spin"
                     j.change_condition()
+                j.set_target(monster_list[j.line])
+                j.set_condition()
                 j.change_frame(dt)
                 j.draw(screen)
 
-    for i in monster_list:
-        if key_condition[pygame.K_4]:
-            i.condition="attack"
-            i.change_condition()
-        elif key_condition[pygame.K_5]:
-            i.condition="idle" 
-            i.change_condition()
-        elif key_condition[pygame.K_6]:
-            i.condition="spin"
-            i.change_condition()
-        
-        i.change_frame(dt) 
-        i.draw(screen)
+    for j in monster_list:
+        for i in j:
+            if key_condition[pygame.K_4]: 
+                i.condition="attack" 
+                i.change_condition() 
+            elif key_condition[pygame.K_5]: 
+                i.condition="idle" 
+                i.change_condition() 
+            elif key_condition[pygame.K_6]: 
+                i.condition="spin" 
+                i.change_condition() 
+
+            if i.is_moving:
+                i.move(dt)
+            else:
+                t_row, t_col = i.get_target(spirit_list[i.index]) 
+
+                if t_col != -1:
+                    i.target = get_s_target(t_row, t_col) 
+                    i.set_condition() 
+                else:
+                    i.condition = "idle" 
+            
+            i.change_frame(dt) 
+            i.draw(screen)
 
     for effects in effect_list:
         effects.draw(screen)
@@ -180,23 +195,39 @@ while playing:
     for i in store_btn_list:
         i.set_hitbox()
         if dragging_btn is None:
-            data = i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
-            if data:
-                spirit_list.append(spirit_dict[data[1]](data[0]))
-                spirit_list[-1].set_frame()
+            i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
         elif i is dragging_btn:
             data = i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
             if data:
                 if data[0] in located_rect:
                     break
                 else:
-                    located_rect.append(data[0])
+                    located_rect[data[2][1]][data[2][0]]=data[0]
                     effect_list.append(effect(data[0].centerx,data[0].centery,smoke_effect_l))
-                    spirit_list[data[2][1]][data[2][0]]=(spirit_dict[data[1]](data[0]))
+                    if data[1]=="dark":
+                        spirit_list[data[2][1]][data[2][0]]=Dark_Spirit(data[0],data[2][1])
+                    if data[1]=="light":
+                        spirit_list[data[2][1]][data[2][0]]=Light_Spirit(data[0],data[2][1])
+                    if data[1]=="water":
+                        spirit_list[data[2][1]][data[2][0]]=Water_Spirit(data[0],data[2][1])
+                    if data[1]=="fire":
+                        spirit_list[data[2][1]][data[2][0]]=Fire_Spirit(data[0],data[2][1])
+                    if data[1]=="grass":
+                        spirit_list[data[2][1]][data[2][0]]=Grass_Spirit(data[0],data[2][1])
+                    if data[1]=="stone":
+                        spirit_list[data[2][1]][data[2][0]]=Stone_Spirit(data[0],data[2][1])
                     spirit_list[data[2][1]][data[2][0]].set_frame()
 
         i.change_frame(dt)
         i.draw(screen)
+
+    total_monsters_in_wave = sum(len(wave_data[wave - 1].get(f"index_{i}", [])) for i in range(1, 5))
+    spawned_monsters_count = sum(len(sublist) for sublist in monster_list)
+
+    if spawned_monsters_count >= total_monsters_in_wave:
+        all_monsters_arrived = all(m.has_arrived for sublist in monster_list for m in sublist)
+    else:
+        all_monsters_arrived = False
 
     if all_monsters_arrived and key_condition[pygame.K_SPACE]:
         wave += 1
@@ -204,42 +235,29 @@ while playing:
         if wave > len(wave_data):
             wave = 1  
 
-
-
-    if wave > 1:
-        background_im=get_im("asset/ui/background_2.jpg")
-        background_im=set_im(background_im, 1280, 640,256,True)
-
-    font = pygame.font.Font(None, 36)
-
-    if debug_mod:
-        wave_text = font.render(f"Wave: {wave}", True, BLACK)
-        screen.blit(wave_text, (10, 10))
-        
-        info_font = pygame.font.Font(None, 24)
-        info_texts = [
-            "1,2,3: Spirit states (attack, idle, spin)",
-            "4,5,6: Monster states (attack, idle, spin)", 
-            "SPACE: Next wave (when all monsters arrived)",
-            f"Monsters arrived: {sum(1 for m in monster_list if m.has_arrived)}/{len(monster_list)}"
-        ]
-
-        for i in range(24):
-            pygame.draw.rect(screen, BLUE, spirit_pos_list[i].get_rect())
-
-        for j in itertools.chain.from_iterable(monster_pos_list):
-            pygame.draw.rect(screen, RED, j)
-
-        for i, text in enumerate(info_texts):
-            info_surface = info_font.render(text, True, BLACK)
-            screen.blit(info_surface, (10, 50 + i * 25))
-            
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             playing = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_d:
-                debug_mod = not debug_mod
 
+    font = pygame.font.Font(None, 36)
+    wave_text = font.render(f"Wave: {wave}", True, BLACK)
+    screen.blit(wave_text, (10, 10))
+    
+    info_font = pygame.font.Font(None, 24)
+    arrived_count = sum(1 for sublist in monster_list for m in sublist if m.has_arrived)
+    
+    info_texts = [
+        "1,2,3: Spirit states (attack, idle, spin)",
+        "4,5,6: Monster states (attack, idle, spin)", 
+        "SPACE: Next wave (when all monsters arrived)",
+        f"Monsters arrived: {arrived_count}/{spawned_monsters_count}"
+    ]
+
+    if wave > 1:
+        background_im=get_im("asset/ui/background_2.jpg")
+
+    for i, text in enumerate(info_texts):
+        info_surface = info_font.render(text, True, BLACK)
+        screen.blit(info_surface, (10, 50 + i * 25))
     pygame.display.flip()
 pygame.quit()

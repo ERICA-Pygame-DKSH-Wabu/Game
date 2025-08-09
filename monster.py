@@ -1,106 +1,90 @@
 import pygame
-import math
 from spirit import *
 
 class Monster(Spirit):
 
-    def __init__(self, pos, m_type):
-        super().__init__(pos)
-        self.name = m_type
-        self.im_size = 150
-        self.target_rect = [0,0]
-        
-        self.target_pos = pos  
-        self.start_pos = pygame.Vector2(1400, pos.centery) 
-        self.current_pos = pygame.Vector2(self.start_pos)  
-        self.move_speed = 100  
-        self.is_moving = True
-        self.has_arrived = False
-        
-        self.hitbox.center = self.start_pos
-        
-    def set_frame(self):
-        self.frame={
-            "attack": get_frame(f"asset/monster/{self.name}/attack",self.im_size,self.im_size,255),
-            "idle": get_frame(f"asset/monster/{self.name}/idle",self.im_size,self.im_size,255),
-            "spin": get_frame(f"asset/monster/{self.name}/spin",self.im_size,self.im_size,255),
-            "move": get_frame(f"asset/monster/{self.name}/idle",self.im_size,self.im_size,255)  
-        }
+    def __init__(self, index, m_type, t):
+        super().__init__(index, m_type)
+        self.name = m_type 
+        self.im_size = 150 
+        self.target = t  
+        self.move_speed = 100 
+        self.is_moving = True 
+        self.has_arrived = False  
+        self.reroad = False 
+        self.index = index 
+        self.target_col = 0 
+        screen_width = 1280 
+        self.hitbox.centery = self.target.centery
+        self.hitbox.centerx = screen_width + (self.im_size / 2)
+        self.condition = "spin"
 
-    def set_target_rect(self, row, col):
-        self.target_rect = [col, row]
-
-    def update_movement(self, dt):
-        if not self.is_moving or self.has_arrived:
-            return
-            
-        target_vector = pygame.Vector2(self.target_pos.center) - self.current_pos
-        distance = target_vector.length()
-
-        if distance <= 5:
-            self.current_pos = pygame.Vector2(self.target_pos.center)
-            self.is_moving = False
-            self.has_arrived = True
-            self.condition = "idle"  
-        else:
-            move_distance = self.move_speed * dt * 0.001 
-            if move_distance > distance:
-                move_distance = distance
-                
-            direction = target_vector.normalize()
-            self.current_pos += direction * move_distance
-            self.condition = "move"  
-            
-        self.hitbox.center = self.current_pos
-
-    def change_frame(self, dt):
-        self.update_movement(dt)
-        
-        if self.condition in self.frame:
-            self.img = self.frame[self.condition][int(self.frame_index)]
-            if len(self.frame[self.condition]) <= int(self.frame_index + 0.01 * dt * self.frame_speed):
-                self.frame_index = 0
+    def move(self, dt):
+        """몬스터를 왼쪽으로 이동시켜 목표 지점으로 향하게 합니다."""
+        if self.is_moving:
+            if self.hitbox.centerx > self.target.centerx:
+                self.condition = "spin"
+                self.hitbox.x -= self.move_speed * (dt / 1000.0)
             else:
-                self.frame_index += 0.01 * dt * self.frame_speed
+                self.hitbox.centerx = self.target.centerx
+                self.is_moving = False
+                self.has_arrived = True
+                self.condition = "idle" 
+                self.frame_index = 0 
 
-    def reset_position(self):
+    def set_frame(self): 
+        self.frame={ 
+            "attack": get_frame(f"asset/monster/{self.name}/attack",self.im_size,self.im_size,255), #
+            "idle": get_frame(f"asset/monster/{self.name}/idle",self.im_size,self.im_size,255), #
+            "spin": get_frame(f"asset/monster/{self.name}/spin",self.im_size,self.im_size,255), #
+        } 
 
-        self.current_pos = pygame.Vector2(self.start_pos)
-        self.hitbox.center = self.start_pos
-        self.is_moving = True
-        self.has_arrived = False
-        self.condition = "move"
-        self.frame_index = 0
+    def get_target(self,target_l): 
+        try: 
+            self.target_col = -1 
+            a = 5 
+            for i in reversed(target_l):  
+                if i: 
+                    self.target_col = a 
+                    break 
+                a -= 1 
+        except: 
+            self.target_col = -1 
+        return (self.index, self.target_col) 
 
-class Water_Monster(Monster):
-    def __init__(self, pos):
-        super().__init__(pos, "water")
-        self.im_size = 96
+    def reset_position(self): 
+        self.is_moving = True 
+        self.has_arrived = False 
+        self.condition = "move" 
+        self.frame_index = 0 
 
-class Light_Monster(Monster):
-    def __init__(self, pos):
-        super().__init__(pos, "light")
-        self.im_size = 120
+class Water_Monster(Monster): 
+    def __init__(self, index,t): 
+        super().__init__(index, "water",t) 
+        self.im_size = 96 
 
-class Stone_Monster(Monster):
-    def __init__(self, pos):
-        super().__init__(pos, "stone")
-        self.im_size = 120
+class Light_Monster(Monster): 
+    def __init__(self, index,t): 
+        super().__init__(index, "light",t) 
+        self.im_size = 120 
 
-class Fire_Monster(Monster):
-    def __init__(self, pos):
-        super().__init__(pos, "fire")
-        self.im_size = 90
-        self.y_gap = -12
-        self.frame_speed = 1.0
+class Stone_Monster(Monster): 
+    def __init__(self, index,t): 
+        super().__init__(index, "stone",t) 
+        self.im_size = 120 
 
-class Dark_Monster(Monster):
-    def __init__(self, pos):
-        super().__init__(pos, "dark")
-        self.im_size = 120
+class Fire_Monster(Monster): 
+    def __init__(self, index,t): 
+        super().__init__(index, "fire",t) 
+        self.im_size = 130 
+        self.frame_speed = 1.5 
 
-class Grass_Monster(Monster):
-    def __init__(self, pos):
-        super().__init__(pos, "grass")
-        self.im_size = 110
-        self.y_gap = -5
+class Dark_Monster(Monster): 
+    def __init__(self, index,t): 
+        super().__init__(index, "dark",t) 
+        self.im_size = 120 
+
+class Grass_Monster(Monster): 
+    def __init__(self, index,t): 
+        super().__init__(index, "grass",t) 
+        self.im_size = 144 
