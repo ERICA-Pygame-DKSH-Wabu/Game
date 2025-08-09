@@ -1,14 +1,17 @@
 from util import *
 
 class Spirit():
-    def __init__(self,pos, name =""):
+    def __init__(self,pos,line, name=""):
+        self.line=line
+        self.distance=0
+        self.target=False
         self.name=name
         self.frame={}
         self.condition="idle"
         self.img=None
         self.hitbox=pygame.rect.Rect(0,0,50,50)
         self.hitbox.center=pos.center
-
+        self.attack_speed=1
         self.max_health=0
         self.health=0
         self.length=0
@@ -21,6 +24,8 @@ class Spirit():
         self.frame_speed=1
         self.enemy_circle_surface = pygame.Surface((self.hitbox.width+10,25), pygame.SRCALPHA)
         pygame.draw.ellipse(self.enemy_circle_surface, (0,0,0,96), (0,0,self.hitbox.width+10,25))
+    def set_target(self,target_l):
+        self.target=min(target_l, key=lambda obj: obj.hitbox.centerx)
 
     def draw(self,screen):
         screen.blit(self.enemy_circle_surface, (self.hitbox.centerx-(self.hitbox.width+10)//2,self.hitbox.bottom-5))
@@ -33,39 +38,51 @@ class Spirit():
             "idle": get_frame(f"asset/spirit/{self.name}/idle",self.im_size,self.im_size,255),
             "spin": get_frame(f"asset/spirit/{self.name}/spin",self.im_size,self.im_size,255)
         }
-
+    def set_condition(self):
+        if abs(self.hitbox.centerx-self.target_pos) > self.distance:
+            if self.reroad:
+                self.condition="attack"
+            else:
+                self.condition="spin"
+        else:
+            self.condition="idle"
 
     def change_frame(self,dt):
-        self.img=self.frame[self.condition][int(self.frame_index)]
-        if len(self.frame[self.condition]) <= int(self.frame_index+0.01*dt*self.frame_speed) :
-            self.frame_index=0
-        else:
-            self.frame_index+=0.01*dt*self.frame_speed
-
+        frame= 0.01 * dt * self.frame_speed*self.attack_speed
+        if self.condition in self.frame:
+            self.img = self.frame[self.condition][int(self.frame_index)]
+            if len(self.frame[self.condition]) <= int(self.frame_index + frame):
+                self.frame_index = 0
+                if self.condition=="spin":
+                    self.reroad=True
+                elif self.condition=="attack":
+                    self.reroad=False
+            else:
+                self.frame_index += frame
     def change_condition(self):
         self.frame_index=0
 
 class Water_Spirit(Spirit):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos,line):
+        super().__init__(pos,line)
         self.name = "water"
         self.im_size=96
 
 class Light_Spirit(Spirit):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos,line):
+        super().__init__(pos,line)
         self.name = "light"
         self.im_size=120
 
 class Stone_Spirit(Spirit):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos,line):
+        super().__init__(pos,line)
         self.name = "stone"
         self.im_size=120
 
 class Fire_Spirit(Spirit):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos,line):
+        super().__init__(pos,line)
         self.name = "fire"
         self.im_size=130
         self.frame_speed=1.5
@@ -77,13 +94,13 @@ class Fire_Spirit(Spirit):
         }
 
 class Dark_Spirit(Spirit):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos,line):
+        super().__init__(pos,line)
         self.name = "dark"
         self.im_size=120
 
 class Grass_Spirit(Spirit):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos,line):
+        super().__init__(pos,line)
         self.name = "grass"
         self.im_size=120

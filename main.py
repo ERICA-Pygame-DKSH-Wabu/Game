@@ -21,14 +21,7 @@ screen_height = 640
 screen = pygame.display.set_mode((screen_width, screen_height))
 smoke_effect_l=get_frame("asset/ui/effect",120,120,150)
 
-spirit_dict={
-    "water": Water_Spirit,
-    "fire":Fire_Spirit,
-    "grass":Grass_Spirit,
-    "stone":Stone_Spirit,
-    "light": Light_Spirit,
-    "dark":Dark_Spirit
-}
+
 
 monster_dict={
     "water": Water_Monster,
@@ -49,12 +42,12 @@ YELLOW = (255, 255, 0)
 BLACK = (0, 0, 0)
 
 spirit_list=[[False for i in range(6)] for j in range(4)]
-monster_list=[]
+monster_list=[[] for i in range(4)]
 effect_list=[]
 spirit_pos_list = []
 monster_pos_list = []
 store_btn_list=[]
-located_rect = []
+located_rect = [[False for i in range(6)] for j in range(4)]
 
 wave_start_time = 0
 wave_spawn_delay = 500  
@@ -86,7 +79,6 @@ background_im=set_im(background_im, 1280, 640,256,True)
 wave = 1  
 fps = pygame.time.Clock()
 playing = True
-
 def spawn_monsters_gradually(wave_data_current, current_time):
     """몬스터를 점진적으로 스폰하는 함수"""
     global monsters_spawned, wave_start_time, all_monsters_arrived
@@ -136,7 +128,6 @@ while playing:
 
     if wave_loaded and wave <= len(wave_data):
         spawn_monsters_gradually(wave_data[wave - 1], current_time)
-
     for i in spirit_list:
         for j in i:
             if j:
@@ -149,22 +140,27 @@ while playing:
                 elif key_condition[pygame.K_3]:
                     j.condition="spin"
                     j.change_condition()
+                j.set_target(monster_list[j.line])
+                j.set_condition()
                 j.change_frame(dt)
                 j.draw(screen)
 
-    for i in monster_list:
-        if key_condition[pygame.K_4]:
-            i.condition="attack"
-            i.change_condition()
-        elif key_condition[pygame.K_5]:
-            i.condition="idle" 
-            i.change_condition()
-        elif key_condition[pygame.K_6]:
-            i.condition="spin"
-            i.change_condition()
-        
-        i.change_frame(dt) 
-        i.draw(screen)
+    for j in monster_list:
+        for i in j:
+            if key_condition[pygame.K_4]:
+                i.condition="attack"
+                i.change_condition()
+            elif key_condition[pygame.K_5]:
+                i.condition="idle" 
+                i.change_condition()
+            elif key_condition[pygame.K_6]:
+                i.condition="spin"
+                i.change_condition()
+            j.set_target(monster_list[j.line])
+            j.set_condition()
+            i.move(dt)
+            i.change_frame(dt) 
+            i.draw(screen)
 
     for effects in effect_list:
         effects.draw(screen)
@@ -180,19 +176,27 @@ while playing:
     for i in store_btn_list:
         i.set_hitbox()
         if dragging_btn is None:
-            data = i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
-            if data:
-                spirit_list.append(spirit_dict[data[1]](data[0]))
-                spirit_list[-1].set_frame()
+            i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
         elif i is dragging_btn:
             data = i.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
             if data:
                 if data[0] in located_rect:
                     break
                 else:
-                    located_rect.append(data[0])
+                    located_rect[data[2][1]][data[2][0]]=data[0]
                     effect_list.append(effect(data[0].centerx,data[0].centery,smoke_effect_l))
-                    spirit_list[data[2][1]][data[2][0]]=spirit_dict[data[1]](data[0])
+                    if data[1]=="dark":
+                        spirit_list[data[2][1]][data[2][0]]=Dark_Spirit(data[0],data[2][1])
+                    if data[1]=="light":
+                        spirit_list[data[2][1]][data[2][0]]=Light_Spirit(data[0],data[2][1])
+                    if data[1]=="water":
+                        spirit_list[data[2][1]][data[2][0]]=Water_Spirit(data[0],data[2][1])
+                    if data[1]=="fire":
+                        spirit_list[data[2][1]][data[2][0]]=Fire_Spirit(data[0],data[2][1])
+                    if data[1]=="grass":
+                        spirit_list[data[2][1]][data[2][0]]=Grass_Spirit(data[0],data[2][1])
+                    if data[1]=="stone":
+                        spirit_list[data[2][1]][data[2][0]]=Stone_Spirit(data[0],data[2][1])
                     spirit_list[data[2][1]][data[2][0]].set_frame()
 
         i.change_frame(dt)
