@@ -57,7 +57,7 @@ class Store_Button(Button):
                 for j in spirit_pos_l:
                     if self.hitbox.colliderect(j.rect):
                         self.set_hitbox()
-                        return (j.rect, self.s_type,j.pos)
+                    return (j.rect, self.s_type,j.pos)
                 self.set_hitbox()
                 return False
 
