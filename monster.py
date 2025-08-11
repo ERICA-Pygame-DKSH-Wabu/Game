@@ -17,12 +17,14 @@ class Monster(Spirit):
         self.hitbox.centery = self.target.centery
         self.hitbox.centerx = screen_width + (self.im_size / 2)
         self.condition = "spin"
+
     def set_frame(self):
         self.frame={
             "attack": get_frame(f"asset/monster/{self.name}/attack",self.im_size,self.im_size,255),
             "idle": get_frame(f"asset/monster/{self.name}/idle",self.im_size,self.im_size,255),
             "spin": get_frame(f"asset/monster/{self.name}/spin",self.im_size,self.im_size,255),
         }
+
     def set_target(self,target_l):
         for i in target_l:
             if i:
@@ -35,36 +37,36 @@ class Monster(Spirit):
 
 
 class Water_Monster(Monster): 
-    def __init__(self, index,t): 
+    def __init__(self, index,m,t): 
         super().__init__(index, "water",t) 
         self.im_size = 96 
 
 
 class Light_Monster(Monster): 
-    def __init__(self, index,t): 
+    def __init__(self, index,m,t): 
         super().__init__(index, "light",t) 
         self.im_size = 120 
 
 class Stone_Monster(Monster): 
-    def __init__(self, index,t): 
+    def __init__(self, index,m,t): 
         super().__init__(index, "stone",t) 
         self.im_size = 120 
 
 
 class Fire_Monster(Monster): 
-    def __init__(self, index,t): 
+    def __init__(self, index,m,t): 
         super().__init__(index, "fire",t) 
         self.im_size = 130 
         self.frame_speed = 1.5 
 
 
 class Dark_Monster(Monster): 
-    def __init__(self, index,t): 
+    def __init__(self, index,m,t): 
         super().__init__(index, "dark",t) 
         self.im_size = 120 
 
 
 class Grass_Monster(Monster): 
-    def __init__(self, index,t): 
+    def __init__(self, index,m,t): 
         super().__init__(index, "grass",t) 
         self.im_size = 144 

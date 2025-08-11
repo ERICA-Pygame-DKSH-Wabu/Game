@@ -11,7 +11,6 @@ class Spirit():
         self.condition="idle"
         self.img=None
         self.hitbox=pygame.rect.Rect(0,0,50,50)
-        self.hitbox.center=pos.center
         self.attack_speed=1
         self.max_health=0
         self.health=0
@@ -68,24 +67,28 @@ class Water_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)
         self.name = "water"
+        self.hitbox.center=pos.center
         self.im_size=96
 
 class Light_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)
         self.name = "light"
+        self.hitbox.center=pos.center
         self.im_size=120
 
 class Stone_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)
         self.name = "stone"
+        self.hitbox.center=pos.center
         self.im_size=120
 
 class Fire_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)
         self.name = "fire"
+        self.hitbox.center=pos.center
         self.im_size=130
         self.frame_speed=1.5
     def set_frame(self):
@@ -99,10 +102,12 @@ class Dark_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)
         self.name = "dark"
+        self.hitbox.center=pos.center
         self.im_size=120
 
 class Grass_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)
         self.name = "grass"
+        self.hitbox.center=pos.center
         self.im_size=120
