@@ -1,8 +1,9 @@
 from util import *
 
 class Spirit():
-    def __init__(self,pos,index, name=""):
-        self.line=index
+    def __init__(self,pos,line, name=""):
+        self.reroad=True
+        self.line=line
         self.distance=0
         self.target=False
         self.name=name
@@ -10,11 +11,12 @@ class Spirit():
         self.condition="idle"
         self.img=None
         self.hitbox=pygame.rect.Rect(0,0,50,50)
+        self.hitbox.center=pos.center
         self.attack_speed=1
         self.max_health=0
         self.health=0
         self.length=0
-
+        self.target_pos = False
         self.speed=1
         self.cooltime=0
         self.ct=0
@@ -23,10 +25,9 @@ class Spirit():
         self.frame_speed=1
         self.enemy_circle_surface = pygame.Surface((self.hitbox.width+10,25), pygame.SRCALPHA)
         pygame.draw.ellipse(self.enemy_circle_surface, (0,0,0,96), (0,0,self.hitbox.width+10,25))
-
     def set_target(self,target_l):
-        self.target=min(target_l, key=lambda obj: obj.hitbox.centerx)
-    
+        if target_l:
+            self.target_pos=min(target_l, key=lambda obj: obj.hitbox.centerx).hitbox.left
 
     def draw(self,screen):
         screen.blit(self.enemy_circle_surface, (self.hitbox.centerx-(self.hitbox.width+10)//2,self.hitbox.bottom-5))
@@ -40,7 +41,7 @@ class Spirit():
             "spin": get_frame(f"asset/spirit/{self.name}/spin",self.im_size,self.im_size,255)
         }
     def set_condition(self):
-        if abs(self.hitbox.centerx-self.target_pos) > self.distance:
+        if abs(self.hitbox.centerx-self.target_pos) < self.distance and self.target_pos:
             if self.reroad:
                 self.condition="attack"
             else:
@@ -63,37 +64,28 @@ class Spirit():
     def change_condition(self):
         self.frame_index=0
 
-    def get_pos(self):
-        return(self.pos)
-
-
-
 class Water_Spirit(Spirit):
-    def __init__(self, pos,index):
-        super().__init__(pos,index)
+    def __init__(self, pos,line):
+        super().__init__(pos,line)
         self.name = "water"
-        self.hitbox.center=pos.center
         self.im_size=96
 
 class Light_Spirit(Spirit):
-    def __init__(self, pos,index):
-        super().__init__(pos,index)
+    def __init__(self, pos,line):
+        super().__init__(pos,line)
         self.name = "light"
-        self.hitbox.center=pos.center
         self.im_size=120
 
 class Stone_Spirit(Spirit):
-    def __init__(self, pos,index):
-        super().__init__(pos,index)
+    def __init__(self, pos,line):
+        super().__init__(pos,line)
         self.name = "stone"
-        self.hitbox.center=pos.center
         self.im_size=120
 
 class Fire_Spirit(Spirit):
-    def __init__(self, pos,index):
-        super().__init__(pos,index)
+    def __init__(self, pos,line):
+        super().__init__(pos,line)
         self.name = "fire"
-        self.hitbox.center=pos.center
         self.im_size=130
         self.frame_speed=1.5
     def set_frame(self):
@@ -104,15 +96,13 @@ class Fire_Spirit(Spirit):
         }
 
 class Dark_Spirit(Spirit):
-    def __init__(self, pos,index):
-        super().__init__(pos,index)
+    def __init__(self, pos,line):
+        super().__init__(pos,line)
         self.name = "dark"
-        self.hitbox.center=pos.center
         self.im_size=120
 
 class Grass_Spirit(Spirit):
-    def __init__(self, pos,index):
-        super().__init__(pos,index)
+    def __init__(self, pos,line):
+        super().__init__(pos,line)
         self.name = "grass"
-        self.hitbox.center=pos.center
         self.im_size=120
