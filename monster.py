@@ -3,19 +3,16 @@ from spirit import *
 
 class Monster(Spirit):
 
-    def __init__(self, index, m_type, t):
-        super().__init__(index, m_type)
+    def __init__(self,pos, index, m_type):
+        super().__init__(pos,index, m_type)
         self.name = m_type 
         self.im_size = 150 
-        self.target = t  
+        self.target = 0
         self.move_speed = 100 
         self.is_moving = True 
         self.has_arrived = False  
         self.index = index 
         self.target_col = 0 
-        screen_width = 1280 
-        self.hitbox.centery = self.target.centery
-        self.hitbox.centerx = screen_width + (self.im_size / 2)
         self.condition = "spin"
 
     def set_frame(self):
@@ -28,45 +25,46 @@ class Monster(Spirit):
     def set_target(self,target_l):
         for i in target_l:
             if i:
-                self.target_pos=i
+                self.target=i.left
 
     def move(self,dt):
         if self.condition=="idle":
-            self.hitbox.left-=self.speed*dt
+            print("s")
+            self.hitbox.left-=self.speed*dt*0.05
                 
 
 
 class Water_Monster(Monster): 
-    def __init__(self, index,m,t): 
-        super().__init__(index, "water",t) 
+    def __init__(self,pos, index,m): 
+        super().__init__(pos,index, m) 
         self.im_size = 96 
 
 
 class Light_Monster(Monster): 
-    def __init__(self, index,m,t): 
-        super().__init__(index, "light",t) 
+    def __init__(self,pos, index,m): 
+        super().__init__(pos,index, m) 
         self.im_size = 120 
 
 class Stone_Monster(Monster): 
-    def __init__(self, index,m,t): 
-        super().__init__(index, "stone",t) 
+    def __init__(self, pos,index,m): 
+        super().__init__(pos,index, m) 
         self.im_size = 120 
 
 
 class Fire_Monster(Monster): 
-    def __init__(self, index,m,t): 
-        super().__init__(index, "fire",t) 
+    def __init__(self,pos, index,m): 
+        super().__init__(pos,index, m) 
         self.im_size = 130 
         self.frame_speed = 1.5 
 
 
 class Dark_Monster(Monster): 
-    def __init__(self, index,m,t): 
-        super().__init__(index, "dark",t) 
+    def __init__(self,pos, index,m): 
+        super().__init__(pos,index,m) 
         self.im_size = 120 
 
 
 class Grass_Monster(Monster): 
-    def __init__(self, index,m,t): 
-        super().__init__(index, "grass",t) 
+    def __init__(self,pos, index,m): 
+        super().__init__(pos,index,m) 
         self.im_size = 144 
