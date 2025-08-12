@@ -25,7 +25,7 @@ class Spirit():
         pygame.draw.ellipse(self.enemy_circle_surface, (0,0,0,96), (0,0,self.hitbox.width+10,25))
     def set_target(self,target_l):
         if target_l:
-            self.target=min(target_l, key=lambda obj: obj.hitbox.centerx).hitbox.left
+            self.target=min(target_l, key=lambda obj: obj.hitbox.centerx).hitbox.centerx
 
     def draw(self,screen):
         
@@ -41,7 +41,7 @@ class Spirit():
             "spin": get_frame(f"asset/spirit/{self.name}/spin",self.im_size,self.im_size,255)
         }
     def set_condition(self):
-        if abs(int(self.hitbox.left)-int(self.target)) <= self.distance and self.target:
+        if abs(int(self.hitbox.centerx)-int(self.target)) <= self.distance and self.target:
 
             if self.reroad:
                 self.condition="attack"
@@ -49,20 +49,24 @@ class Spirit():
                 self.condition="spin"
         else:
             self.condition="idle"
-            self.reroad=False
+            self.reroad=True
 
     def change_frame(self,dt):
-        frame= 0.01 * dt *self.attack_speed
-        if self.condition in self.frame:
-            self.img = self.frame[self.condition][int(self.frame_index)]
-            if len(self.frame[self.condition]) <= int(self.frame_index + frame):
-                self.frame_index = 0
-                if self.condition=="spin":
-                    self.reroad=True
-                elif self.condition=="attack":
-                    self.reroad=False
-            else:
-                self.frame_index += frame
+        try:
+            frame= 0.01 * dt *self.attack_speed
+            if self.condition in self.frame:
+                self.img = self.frame[self.condition][int(self.frame_index)]
+                if len(self.frame[self.condition]) <= int(self.frame_index + frame):
+                    self.frame_index = 0
+                    if self.condition=="spin":
+                        self.reroad=True
+                    elif self.condition=="attack":
+                        self.reroad=False
+                else:
+                    self.frame_index += frame
+        except IndexError:
+            self.frame_index=0
+
     def change_condition(self):
         self.frame_index=0
 

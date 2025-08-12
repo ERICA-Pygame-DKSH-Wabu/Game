@@ -25,12 +25,12 @@ class Monster(Spirit):
     def set_target(self,target_l):
         for i in target_l:
             if i:
-                self.target=i.left
+                self.target=i.centerx
 
     def move(self,dt):
         if self.condition=="idle":
             print("s")
-            self.hitbox.left-=self.speed*dt*0.05
+            self.hitbox.centerx-=self.speed*dt*0.04
                 
 
 
@@ -55,7 +55,6 @@ class Fire_Monster(Monster):
     def __init__(self,pos, index,m): 
         super().__init__(pos,index, m) 
         self.im_size = 130 
-        self.frame_speed = 1.5 
 
 
 class Dark_Monster(Monster): 
