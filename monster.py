@@ -37,13 +37,15 @@ class Monster(Spirit):
 class Water_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index, m) 
-        self.im_size = 96 
+        self.im_size = 110 
 
 
 class Light_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index, m) 
-        self.im_size = 120 
+        self.im_size = 120
+        self.x_gap = -3
+        self.y_gap = 5 
 
 class Stone_Monster(Monster): 
     def __init__(self, pos,index,m): 
@@ -54,16 +56,21 @@ class Stone_Monster(Monster):
 class Fire_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index, m) 
-        self.im_size = 130 
+        self.y_gap = -12
+        self.im_size = 90 
 
 
 class Dark_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index,m) 
         self.im_size = 120 
+        self.x_gap = -3
+        self.y_gap = 5 
 
 
 class Grass_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index,m) 
-        self.im_size = 144 
+        self.im_size = 110
+        self.x_gap = -3
+        self.y_gap = 2

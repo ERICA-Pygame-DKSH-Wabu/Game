@@ -15,6 +15,7 @@ with open("story_wave.json", "r", encoding="utf-8") as f:
     wave_data = json.load(f)
 
 wave_loaded = False
+develop_mode = True
 
 spirit_type=["water","fire","grass","light","stone","dark"]
 screen_width = 1280
@@ -69,13 +70,14 @@ all_monsters_arrived = False
 for i in range(6):
     for j in range(4):
         x = i * 80 + j * 25 + 260
-        y = screen_height - (j + 1) * 60 - 50
-        rect = pygame.Rect(x, y, 50, 50)
+        y = screen_height - (j + 1) * 59 - 20
+        rect = pygame.Rect(x, y, 50, 30)
         spirit_pos_list.append(Pos(rect,(i,3-j)))#히트박스,행렬
+
 for i in range(4):
     x = screen_width + i * 25 + 100
-    y = screen_height - (i + 1) * 60 - 40
-    rect = pygame.Rect(x, y, 50, 50)
+    y = screen_height - (i + 1) * 59 - 20
+    rect = pygame.Rect(x, y, 50, 30)
     monster_pos_list.append(Pos(rect,(i,3-j)))#히트박스,행렬
 monster_pos_list.reverse()
 
@@ -86,7 +88,7 @@ for monster in range(6):
 background_im=get_im("asset/ui/background_1.jpg")
 background_im=set_im(background_im, 1280, 640,256,True)
 
-wave = 1  
+wave = 1
 fps = pygame.time.Clock()
 playing = True
 
@@ -128,6 +130,7 @@ while playing:
     mouse_pos_x, mouse_pos_y = pygame.mouse.get_pos()
     mouse_condition = pygame.mouse.get_pressed()
     key_condition = pygame.key.get_pressed()
+
     if scene:
         screen.blit(background_im,(0,0))
 
@@ -207,25 +210,38 @@ while playing:
             if wave > len(wave_data):
                 wave = 1  
 
-        font = pygame.font.Font(None, 36)
-        wave_text = font.render(f"Wave: {wave}", True, BLACK)
-        screen.blit(wave_text, (10, 10))
-        
-        info_font = pygame.font.Font(None, 24)
-        info_texts = [
-            "1,2,3: Spirit states (attack, idle, spin)",
-            "4,5,6: Monster states (attack, idle, spin)", 
-            "SPACE: Next wave (when all monsters arrived)",
-            f"Monsters arrived: {sum(1 for line in monster_list for m in line if m.has_arrived)}/{sum(len(line) for line in monster_list)}"
-        ]
 
         if wave > 1:
             background_im=get_im("asset/ui/background_2.jpg")
+            background_im=set_im(background_im, 1280, 640,256,True)
 
-        for monster, text in enumerate(info_texts):
-            info_surface = info_font.render(text, True, BLACK)
-            screen.blit(info_surface, (10, 50 + monster * 25))
+        if develop_mode:
+            font = pygame.font.Font(None, 36)
+            wave_text = font.render(f"Wave: {wave}", True, BLACK)
+            screen.blit(wave_text, (10, 10))
+            
+            info_font = pygame.font.Font(None, 24)
+            info_texts = [
+                "1,2,3: Spirit states (attack, idle, spin)",
+                "4,5,6: Monster states (attack, idle, spin)", 
+                "SPACE: Next wave (when all monsters arrived)",
+                f"Monsters arrived: {sum(1 for line in monster_list for m in line if m.has_arrived)}/{sum(len(line) for line in monster_list)}"
+            ]
+
+            for monster, text in enumerate(info_texts):
+                info_surface = info_font.render(text, True, BLACK)
+                screen.blit(info_surface, (10, 50 + monster * 25))
+
+            for i in range(24):
+                pygame.draw.rect(screen, BLUE, spirit_pos_list[i].get_rect())
+
+            for j in range(4):
+                pygame.draw.rect(screen, RED, monster_pos_list[j].get_rect())
+
     else:
+        if develop_mode:
+            scene = True
+
         screen.fill((0,0,0))
         screen.blit(start_background_im,(0,0))
 
@@ -269,6 +285,9 @@ while playing:
             playing = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             scene=True
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_d:
+                develop_mode = not develop_mode
 
     pygame.display.flip()
 pygame.quit()

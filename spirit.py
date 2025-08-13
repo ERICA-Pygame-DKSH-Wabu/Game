@@ -10,7 +10,7 @@ class Spirit():
         self.frame={}
         self.condition="idle"
         self.img=None
-        self.hitbox=pygame.rect.Rect(0,0,50,50)
+        self.hitbox=pygame.rect.Rect(0,0,50,30)
         self.attack_speed=1
         self.max_health=0
         self.hitbox.center=pos.center
@@ -21,6 +21,8 @@ class Spirit():
         self.ct=0
         self.frame_index=0
         self.im_size=0
+        self.x_gap=0 #어둠, 빛 몬스터 전용
+        self.y_gap=0 #어둠, 빛 정령 기준
         self.enemy_circle_surface = pygame.Surface((self.hitbox.width+10,25), pygame.SRCALPHA)
         pygame.draw.ellipse(self.enemy_circle_surface, (0,0,0,96), (0,0,self.hitbox.width+10,25))
     def set_target(self,target_l):
@@ -30,9 +32,9 @@ class Spirit():
     def draw(self,screen):
         
         #pygame.draw.rect(screen,(0,0,0),self.hitbox)
-        screen.blit(self.enemy_circle_surface, (self.hitbox.centerx-(self.hitbox.width+10)//2,self.hitbox.bottom-5))
+        screen.blit(self.enemy_circle_surface, (self.hitbox.centerx-(self.hitbox.width+10)//2,self.hitbox.bottom-18))
 
-        screen.blit(self.img,(self.hitbox.centerx-self.img.get_width()//2,self.hitbox.centery-self.img.get_height()//2))
+        screen.blit(self.img,(self.hitbox.centerx-self.img.get_width()//2-self.x_gap,self.hitbox.centery-self.img.get_height()//2-20-self.y_gap))
 
     def set_frame(self):
         self.frame={
@@ -75,6 +77,7 @@ class Water_Spirit(Spirit):
         super().__init__(pos,line)
         self.name = "water"
         self.hitbox.center=pos.center
+        self.y_gap = 2
         self.im_size=96
 
 class Light_Spirit(Spirit):
@@ -89,6 +92,7 @@ class Stone_Spirit(Spirit):
         super().__init__(pos,line)
         self.name = "stone"
         self.hitbox.center=pos.center
+        self.y_gap = 7
         self.im_size=120
 
 class Fire_Spirit(Spirit):
@@ -97,6 +101,7 @@ class Fire_Spirit(Spirit):
         self.name = "fire"
         self.hitbox.center=pos.center
         self.im_size=130
+        self.y_gap = 7
         self.attack_speed=1.5
     def set_frame(self):
         self.frame={
@@ -117,4 +122,5 @@ class Grass_Spirit(Spirit):
         super().__init__(pos,line)
         self.name = "grass"
         self.hitbox.center=pos.center
+        self.y_gap = 3
         self.im_size=120
