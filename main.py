@@ -1,28 +1,22 @@
+
 import json
 import pygame
 import itertools
 from pos import *
 from util import *
-from button import *
-from spirit import *
-from effect import *
-from monster import *
-from background import *
-
 pygame.init()
 
 with open("story_wave.json", "r", encoding="utf-8") as f:
     wave_data = json.load(f)
 
 wave_loaded = False
-develop_mode = True
 
 spirit_type=["water","fire","grass","light","stone","dark"]
 screen_width = 1280
 screen_height = 640
 screen = pygame.display.set_mode((screen_width, screen_height))
-smoke_effect_l=get_frame("asset/ui/effect",120,120,150)
-
+smoke_effect_l=get_frame("asset/ui/appear_effect",120,120,150)
+explosion_effect=get_frame("asset/ui/explosion_effect",160,160,200)
 pygame.display.set_caption("forest witch")
 
 WHITE = (255, 255, 255)
@@ -30,7 +24,13 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
-BLACK = (0, 0, 0)
+BLACK = (0, 0, 0) 
+from button import *
+from spirit import *
+from effect import *
+from monster import *
+from background import *
+
 witch_im=get_im("asset/ui/witch.png")
 witch_im=set_im(witch_im,640,640,256,False)
 start_im=get_im("asset/ui/start.png")
@@ -61,6 +61,12 @@ monster_pos_list = []
 store_btn_list=[]
 located_rect = [[False for i in range(6)] for j in range(4)]
 
+monster_attack_l=[]
+monster_effect_l=[]
+
+spirit_attack_l=[]
+spirit_effect_l=[]
+
 wave_start_time = 0
 wave_spawn_delay = 500  
 monsters_spawned = 0
@@ -68,17 +74,16 @@ monster_count = 0
 all_monsters_arrived = False
  
 for i in range(6):
-    for j in range(4):
-        x = i * 80 + j * 25 + 260
-        y = screen_height - (j + 1) * 59 - 20
-        rect = pygame.Rect(x, y, 50, 30)
-        spirit_pos_list.append(Pos(rect,(i,3-j)))#히트박스,행렬
-
+    for spirit in range(4):
+        x = i * 80 + spirit * 25 + 260
+        y = screen_height - (spirit + 1) * 60 - 50
+        rect = pygame.Rect(x, y, 50, 50)
+        spirit_pos_list.append(Pos(rect,(i,3-spirit)))#히트박스,행렬
 for i in range(4):
     x = screen_width + i * 25 + 100
-    y = screen_height - (i + 1) * 59 - 20
-    rect = pygame.Rect(x, y, 50, 30)
-    monster_pos_list.append(Pos(rect,(i,3-j)))#히트박스,행렬
+    y = screen_height - (i + 1) * 60 - 40
+    rect = pygame.Rect(x, y, 50, 50)
+    monster_pos_list.append(Pos(rect,(i,3-spirit)))#히트박스,행렬
 monster_pos_list.reverse()
 
 
@@ -88,7 +93,7 @@ for monster in range(6):
 background_im=get_im("asset/ui/background_1.jpg")
 background_im=set_im(background_im, 1280, 640,256,True)
 
-wave = 1
+wave = 1  
 fps = pygame.time.Clock()
 playing = True
 
@@ -130,7 +135,6 @@ while playing:
     mouse_pos_x, mouse_pos_y = pygame.mouse.get_pos()
     mouse_condition = pygame.mouse.get_pressed()
     key_condition = pygame.key.get_pressed()
-
     if scene:
         screen.blit(background_im,(0,0))
 
@@ -147,35 +151,57 @@ while playing:
         if wave_loaded and wave <= len(wave_data):
             spawn_monsters_gradually(wave_data[wave - 1], current_time)
         for i in spirit_list:
-            for j in i:
-                if j:
-                    j.set_target(monster_list[j.line])
-                    j.set_condition()
-                    j.change_frame(dt)
-                    j.draw(screen)
+            for spirit in i:
+                if spirit:
+                    spirit.set_target(monster_list[spirit.line])
+                    spirit.set_condition()
+                    spirit.change_frame(dt)
+                    spirit.draw(screen)
+                    spirit.check_damaged_cool(dt)
+                    if spirit.condition=="attack" and int(spirit.frame_index)==spirit.attack_time and spirit.if_attack:
+                        spirit_attack_l.append(attack_effect(spirit.target,spirit.hitbox.centery,explosion_effect,64,spirit.damage))
+                        spirit.if_attack=False
+            for effects in monster_effect_l:
+                if effects.hitbox.colliderect(spirit.hitbox) and spirit.damaged:
+                    spirit.health=-effects.damage
+                    spirit.damaged_cooltime=0
 
         for line_monsters in monster_list:
             for monster in line_monsters:
                 monster.set_target(located_rect[monster.index])
                 monster.set_condition()
                 monster.move(dt)
-                monster.change_frame(dt) 
+                monster.change_frame(dt)
+                monster.check_damaged_cool(dt)
+                if monster.condition=="attack" and int(monster.frame_index)==monster.attack_time and monster.if_attack:
+                    monster_attack_l.append(attack_effect(monster.target,monster.hitbox.centery,explosion_effect,64,monster.damage))
+                    monster.if_attack=False
                 monster.draw(screen)
+                for effects in spirit_effect_l:
+                    if effects.hitbox.colliderect(monster.hitbox) and monster.damaged:
+                        monster.health=-effects.damage
+                        monster.damaged_cooltime=0
 
         for effects in effect_list:
             effects.draw(screen)
             if effects.change_frame(dt):
                 effect_list = [i for i in effect_list if not i == effects]
 
+        for effects in monster_attack_l:
+            effects.draw(screen)
+            if effects.change_frame(dt):
+                monster_attack_l = [i for i in monster_attack_l if not i == effects]
+
+        for effects in spirit_attack_l:
+            effects.draw(screen)
+            if effects.change_frame(dt):
+                spirit_attack_l = [i for i in spirit_attack_l if not i == effects]
         dragging_btn = None
         for btn in store_btn_list:
             if btn.dragging:
                 dragging_btn = btn
                 break
         for monster in store_btn_list:
-            # print(located_rect)
-            # print(spirit_list)
-            # print("-------------------------------------------")
             monster.set_hitbox()
             if dragging_btn is None:
                 monster.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
@@ -210,38 +236,25 @@ while playing:
             if wave > len(wave_data):
                 wave = 1  
 
+        font = pygame.font.Font(None, 36)
+        wave_text = font.render(f"Wave: {wave}", True, BLACK)
+        screen.blit(wave_text, (10, 10))
+        
+        info_font = pygame.font.Font(None, 24)
+        info_texts = [
+            "1,2,3: Spirit states (attack, idle, spin)",
+            "4,5,6: Monster states (attack, idle, spin)", 
+            "SPACE: Next wave (when all monsters arrived)",
+            f"Monsters arrived: {sum(1 for line in monster_list for m in line if m.has_arrived)}/{sum(len(line) for line in monster_list)}"
+        ]
 
         if wave > 1:
             background_im=get_im("asset/ui/background_2.jpg")
-            background_im=set_im(background_im, 1280, 640,256,True)
 
-        if develop_mode:
-            font = pygame.font.Font(None, 36)
-            wave_text = font.render(f"Wave: {wave}", True, BLACK)
-            screen.blit(wave_text, (10, 10))
-            
-            info_font = pygame.font.Font(None, 24)
-            info_texts = [
-                "1,2,3: Spirit states (attack, idle, spin)",
-                "4,5,6: Monster states (attack, idle, spin)", 
-                "SPACE: Next wave (when all monsters arrived)",
-                f"Monsters arrived: {sum(1 for line in monster_list for m in line if m.has_arrived)}/{sum(len(line) for line in monster_list)}"
-            ]
-
-            for monster, text in enumerate(info_texts):
-                info_surface = info_font.render(text, True, BLACK)
-                screen.blit(info_surface, (10, 50 + monster * 25))
-
-            for i in range(24):
-                pygame.draw.rect(screen, BLUE, spirit_pos_list[i].get_rect())
-
-            for j in range(4):
-                pygame.draw.rect(screen, RED, monster_pos_list[j].get_rect())
-
+        for monster, text in enumerate(info_texts):
+            info_surface = info_font.render(text, True, BLACK)
+            screen.blit(info_surface, (10, 50 + monster * 25))
     else:
-        if develop_mode:
-            scene = True
-
         screen.fill((0,0,0))
         screen.blit(start_background_im,(0,0))
 
@@ -285,9 +298,6 @@ while playing:
             playing = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             scene=True
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_d:
-                develop_mode = not develop_mode
 
     pygame.display.flip()
 pygame.quit()

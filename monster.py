@@ -1,6 +1,14 @@
 import pygame
 from spirit import *
-
+monster_frame_dict={}
+l=["water","light","stone","fire","dark","grass"]
+monster_size=[96,120,120,144,120,144]
+for i in l:
+    monster_frame_dict[i]={
+            "attack": get_frame(f"asset/monster/{i}/attack",monster_size[l.index(i)],monster_size[l.index(i)],255),
+            "idle": get_frame(f"asset/monster/{i}/idle",monster_size[l.index(i)],monster_size[l.index(i)],255),
+            "spin": get_frame(f"asset/monster/{i}/spin",monster_size[l.index(i)],monster_size[l.index(i)],255),
+        }
 class Monster(Spirit):
 
     def __init__(self,pos, index, m_type):
@@ -14,14 +22,17 @@ class Monster(Spirit):
         self.index = index 
         self.target_col = 0 
         self.condition = "spin"
-
     def set_frame(self):
-        self.frame={
-            "attack": get_frame(f"asset/monster/{self.name}/attack",self.im_size,self.im_size,255),
-            "idle": get_frame(f"asset/monster/{self.name}/idle",self.im_size,self.im_size,255),
-            "spin": get_frame(f"asset/monster/{self.name}/spin",self.im_size,self.im_size,255),
-        }
-
+        self.frame=monster_frame_dict[self.name]
+    def set_condition(self):
+        if int(self.hitbox.centerx)-self.distance  <= int(self.target)  and self.target:
+            if self.reroad:
+                self.condition="attack"
+            else:
+                self.condition="spin"
+        else:
+            self.condition="idle"
+            self.reroad=True
     def set_target(self,target_l):
         for i in target_l:
             if i:
@@ -29,7 +40,6 @@ class Monster(Spirit):
 
     def move(self,dt):
         if self.condition=="idle":
-            print("s")
             self.hitbox.centerx-=self.speed*dt*0.04
                 
 
@@ -37,15 +47,13 @@ class Monster(Spirit):
 class Water_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index, m) 
-        self.im_size = 110 
+        self.im_size = 96 
 
 
 class Light_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index, m) 
-        self.im_size = 120
-        self.x_gap = -3
-        self.y_gap = 5 
+        self.im_size = 120 
 
 class Stone_Monster(Monster): 
     def __init__(self, pos,index,m): 
@@ -56,21 +64,16 @@ class Stone_Monster(Monster):
 class Fire_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index, m) 
-        self.y_gap = -12
-        self.im_size = 90 
+        self.im_size = 130 
 
 
 class Dark_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index,m) 
         self.im_size = 120 
-        self.x_gap = -3
-        self.y_gap = 5 
 
 
 class Grass_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index,m) 
-        self.im_size = 110
-        self.x_gap = -3
-        self.y_gap = 2
+        self.im_size = 144
