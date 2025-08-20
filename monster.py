@@ -2,7 +2,7 @@ import pygame
 from spirit import *
 monster_frame_dict={}
 l=["water","light","stone","fire","dark","grass"]
-monster_size=[96,120,120,144,120,144]
+monster_size=[120,120,120,96,144,144]
 for i in l:
     monster_frame_dict[i]={
             "attack": get_frame(f"asset/monster/{i}/attack",monster_size[l.index(i)],monster_size[l.index(i)],255),
@@ -15,8 +15,8 @@ class Monster(Spirit):
         super().__init__(pos,index, m_type)
         self.name = m_type 
         self.im_size = 150 
-        self.target = 0
-        self.move_speed = 100 
+        self.target = 180
+        self.move_speed = 60
         self.is_moving = True 
         self.has_arrived = False  
         self.index = index 
@@ -33,10 +33,12 @@ class Monster(Spirit):
         else:
             self.condition="idle"
             self.reroad=True
-    def set_target(self,target_l):
-        for i in target_l:
-            if i:
-                self.target=i.centerx
+    def set_target(self, target_l):
+        candidates = [obj for obj in target_l if obj and obj.centerx <= self.hitbox.centerx]
+        if candidates:
+            self.target = max(candidates, key=lambda obj: obj.centerx).centerx
+        else:
+            self.target = 210+25*(4-self.line)
 
     def move(self,dt):
         if self.condition=="idle":
