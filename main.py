@@ -75,13 +75,14 @@ all_monsters_arrived = False
 for i in range(6):
     for spirit in range(4):
         x = i * 80 + spirit * 25 + 260
-        y = screen_height - (spirit + 1) * 60 - 50
-        rect = pygame.Rect(x, y, 50, 50)
+        y = screen_height - (spirit + 1) * 59 - 20
+        rect = pygame.Rect(x, y, 50, 30)
         spirit_pos_list.append(Pos(rect,(i,3-spirit)))#히트박스,행렬
+
 for i in range(4):
     x = screen_width + i * 25 + 100
-    y = screen_height - (i + 1) * 60 - 40
-    rect = pygame.Rect(x, y, 50, 50)
+    y = screen_height - (i + 1) * 59 - 20
+    rect = pygame.Rect(x, y, 50, 30)
     monster_pos_list.append(Pos(rect,(i,3-spirit)))#히트박스,행렬
 monster_pos_list.reverse()
 
@@ -297,6 +298,7 @@ while playing:
             elif start_alpha <= 0:
                 start_alpha = 0
                 start_dir = 1
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             playing = False

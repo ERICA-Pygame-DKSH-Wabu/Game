@@ -10,6 +10,7 @@ for i in l:
         }
 for i in spirit_frame_dict["fire"]["idle"]:
     spirit_frame_dict["fire"]["idle"][ spirit_frame_dict["fire"]["idle"].index(i)]=set_im(i,138,138,255,False)
+
 class Spirit():
     def __init__(self,pos,line, name=""):
         self.fade=255
@@ -38,6 +39,8 @@ class Spirit():
         self.ct=0
         self.frame_index=0
         self.im_size=0
+        self.x_gap=0 #어둠, 빛 몬스터 전용
+        self.y_gap=0 #어둠, 빛 정령 기준
         self.enemy_circle_surface = pygame.Surface((self.hitbox.width+10,25), pygame.SRCALPHA)
         pygame.draw.ellipse(self.enemy_circle_surface, (0,0,0,96), (0,0,self.hitbox.width+10,25))
     def if_dead(self,dt):
@@ -59,14 +62,14 @@ class Spirit():
     def draw(self,screen):
         
         #pygame.draw.rect(screen,(0,0,0),self.hitbox)
-        screen.blit(self.enemy_circle_surface, (self.hitbox.centerx-(self.hitbox.width+10)//2,self.hitbox.bottom-5))
+        screen.blit(self.enemy_circle_surface, (self.hitbox.centerx-(self.hitbox.width+10)//2,self.hitbox.bottom-30))
 
-        screen.blit(self.img,(self.hitbox.centerx-self.img.get_width()//2,self.hitbox.centery-self.img.get_height()//2))
+        screen.blit(self.img,(self.hitbox.centerx-self.img.get_width()//2-self.x_gap,self.hitbox.centery-self.img.get_height()//2-20-self.y_gap))
         if self.max_health > 0:
             bar_width = 50
             bar_height = 5
             full_rect = pygame.Rect(0, 0, bar_width, bar_height)
-            full_rect.midbottom = (self.hitbox.centerx, self.hitbox.bottom + 27)  # 살짝 아래 붙임
+            full_rect.midbottom = (self.hitbox.centerx, self.hitbox.bottom + 10)  # 살짝 아래 붙임
             ratio = max(0, min(self.health / self.max_health, 1.0))
             curr_rect = full_rect.copy()
             curr_rect.width = int(bar_width * ratio)
@@ -129,6 +132,7 @@ class Light_Spirit(Spirit):
         self.name = "light"
         self.hitbox.center=pos.center
         self.im_size=120
+        self.y_gap = 5
         self.attack_time=5
 
 class Stone_Spirit(Spirit):
@@ -137,6 +141,7 @@ class Stone_Spirit(Spirit):
         self.name = "stone"
         self.hitbox.center=pos.center
         self.im_size=120
+        self.y_gap = 15
         self.attack_time=7
 
 class Fire_Spirit(Spirit):
@@ -145,6 +150,7 @@ class Fire_Spirit(Spirit):
         self.name = "fire"
         self.hitbox.center=pos.center
         self.im_size=130
+        self.y_gap = 10
         self.attack_time=6
 
 class Dark_Spirit(Spirit):
@@ -153,12 +159,15 @@ class Dark_Spirit(Spirit):
         self.name = "dark"
         self.hitbox.center=pos.center
         self.im_size=120
+        self.y_gap = 5
         self.attack_time=5
+
 class Grass_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)
         self.name = "grass"
         self.hitbox.center=pos.center
+        self.y_gap = 7
         self.im_size=120
         self.attack_time=6
     def set_condition(self):

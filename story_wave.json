@@ -2,14 +2,14 @@
   {
     "wave": 1,
     "index_1": ["water" ,"water"],
-    "index_2": ["grass"],
+    "index_2": ["grass","stone"],
     "index_3": ["fire"],
-    "index_4": ["dark"]
+    "index_4": ["dark","light"]
   },
   {
     "wave": 2,
     "index_1": ["fire", "water"],
-    "index_2": ["grass"],
+    "index_2": ["grass","stone"],
     "index_3": ["water", "grass"],
     "index_4": ["fire"]
   },
