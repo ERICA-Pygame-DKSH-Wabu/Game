@@ -16,7 +16,7 @@ class Monster(Spirit):
         self.name = m_type 
         self.im_size = 150 
         self.target = 180
-        self.move_speed = 60
+        self.move_speed = 10
         self.is_moving = True 
         self.has_arrived = False  
         self.index = index 

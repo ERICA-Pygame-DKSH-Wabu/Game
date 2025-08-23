@@ -1,6 +1,21 @@
 import pygame
 import os
+def get_font(path, size):
+    base_path = os.path.dirname(__file__)
+    full_path = os.path.join(base_path, path)
+    return pygame.font.Font(full_path, size)
 
+
+boss_font = get_font("asset/ui/monster.ttf",36)
+monster_font = get_font("asset/ui/monster.ttf", 36)
+witch_font = get_font("asset/ui/witch.ttf", 36)
+
+
+def draw_text(screen,x,y,text,font,text_index,color=(255,255,255)):
+    clipped_text = text[:int(text_index)]
+    text_surface = font.render(clipped_text, True, color)
+    text_rect = text_surface.get_rect(center=(x,y)) 
+    screen.blit(text_surface, text_rect)
 def get_im(path):
     base_path = os.path.dirname(__file__)
     full_path = os.path.join(base_path, path)

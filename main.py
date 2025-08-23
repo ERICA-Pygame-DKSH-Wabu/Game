@@ -1,7 +1,6 @@
 
 import json
 import pygame
-import itertools
 from pos import *
 from util import *
 pygame.init()
@@ -33,9 +32,8 @@ from background import *
 
 mana=10000
 
-
-witch_im=get_im("asset/ui/witch.png")
-witch_im=set_im(witch_im,640,640,256,False)
+witch_frame_index=0
+witch_frame=get_frame("asset/ui/witch",640,640,230)
 start_im=get_im("asset/ui/start.png")
 start_im=set_im(start_im,256,256,256,False)
 start_background_im=get_im("asset/ui/start_background.png")
@@ -48,8 +46,6 @@ fade_alpha = 255
 fade_surface = pygame.Surface((screen_width, screen_height))
 fade_surface.fill((0,0,0))
 
-witch_alpha = 0
-witch_fade_in = False
 
 start_alpha = 0
 start_dir = 1
@@ -75,14 +71,13 @@ all_monsters_arrived = False
 for i in range(6):
     for spirit in range(4):
         x = i * 80 + spirit * 25 + 260
-        y = screen_height - (spirit + 1) * 59 - 20
-        rect = pygame.Rect(x, y, 50, 30)
+        y = screen_height - (spirit + 1) * 60 - 50
+        rect = pygame.Rect(x, y, 50, 50)
         spirit_pos_list.append(Pos(rect,(i,3-spirit)))#히트박스,행렬
-
 for i in range(4):
     x = screen_width + i * 25 + 100
-    y = screen_height - (i + 1) * 59 - 20
-    rect = pygame.Rect(x, y, 50, 30)
+    y = screen_height - (i + 1) * 60 - 40
+    rect = pygame.Rect(x, y, 50, 50)
     monster_pos_list.append(Pos(rect,(i,3-spirit)))#히트박스,행렬
 monster_pos_list.reverse()
 
@@ -264,15 +259,11 @@ while playing:
         screen.fill((0,0,0))
         screen.blit(start_background_im,(0,0))
 
-        witch_draw = witch_im.copy()
-        witch_draw.set_alpha(int(witch_alpha))
-        screen.blit(witch_draw,(screen_width//2 - witch_im.get_width()//2, screen_height//2 - 380))
-
         start_draw = start_im.copy()
         start_draw.set_alpha(int(start_alpha)*0.7)
         screen.blit(start_draw,(screen_width//2 - start_im.get_width()//2, screen_height//2+64))
         if start_pulse:
-            step = 0.25 * round(dt, 3)
+            step = 0.1 * round(dt, 3)
         else:
             step = 0.08 * round(dt, 3)
         if fade_in:
@@ -284,12 +275,11 @@ while playing:
             fade_surface.set_alpha(int(fade_alpha))
             screen.blit(fade_surface, (0,0))
         elif witch_fade_in:
-            witch_alpha += step
-            if witch_alpha >= 255:
-                witch_alpha = 255
+            witch_frame_index += step*0.15
+            if witch_frame_index >= len(witch_frame)-1:
+                witch_frame_index = len(witch_frame)-1
                 witch_fade_in = False
                 start_pulse = True
-
         elif start_pulse:
             start_alpha += step * start_dir
             if start_alpha >= 255:
@@ -298,6 +288,8 @@ while playing:
             elif start_alpha <= 0:
                 start_alpha = 0
                 start_dir = 1
+        if witch_frame_index:
+            screen.blit(witch_frame[int(witch_frame_index)],(-witch_frame[int(witch_frame_index)].get_width()//2+screen_width//2,-20))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

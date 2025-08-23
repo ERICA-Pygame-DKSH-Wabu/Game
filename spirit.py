@@ -66,10 +66,10 @@ class Spirit():
 
         screen.blit(self.img,(self.hitbox.centerx-self.img.get_width()//2-self.x_gap,self.hitbox.centery-self.img.get_height()//2-20-self.y_gap))
         if self.max_health > 0:
-            bar_width = 50
-            bar_height = 5
+            bar_width = 45
+            bar_height = 4
             full_rect = pygame.Rect(0, 0, bar_width, bar_height)
-            full_rect.midbottom = (self.hitbox.centerx, self.hitbox.bottom + 10)  # 살짝 아래 붙임
+            full_rect.midbottom = (self.hitbox.centerx, self.hitbox.bottom)
             ratio = max(0, min(self.health / self.max_health, 1.0))
             curr_rect = full_rect.copy()
             curr_rect.width = int(bar_width * ratio)
