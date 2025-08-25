@@ -134,6 +134,7 @@ class Light_Spirit(Spirit):
         self.im_size=120
         self.y_gap = 5
         self.attack_time=5
+        self.distance=1280-self.hitbox.centerx
 
 class Stone_Spirit(Spirit):
     def __init__(self, pos,line):
@@ -143,6 +144,7 @@ class Stone_Spirit(Spirit):
         self.im_size=120
         self.y_gap = 15
         self.attack_time=7
+        self.distance=60
 
 class Fire_Spirit(Spirit):
     def __init__(self, pos,line):
@@ -152,6 +154,7 @@ class Fire_Spirit(Spirit):
         self.im_size=130
         self.y_gap = 10
         self.attack_time=6
+        self.distance=250
 
 class Dark_Spirit(Spirit):
     def __init__(self, pos,line):
@@ -161,6 +164,7 @@ class Dark_Spirit(Spirit):
         self.im_size=120
         self.y_gap = 5
         self.attack_time=5
+        self.distance=1280-self.hitbox.centerx
 
 class Grass_Spirit(Spirit):
     def __init__(self, pos,line):

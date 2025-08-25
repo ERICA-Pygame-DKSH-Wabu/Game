@@ -6,11 +6,6 @@ def get_font(path, size):
     return pygame.font.Font(full_path, size)
 
 
-boss_font = get_font("asset/ui/monster.ttf",36)
-monster_font = get_font("asset/ui/monster.ttf", 36)
-witch_font = get_font("asset/ui/witch.ttf", 36)
-
-
 def draw_text(screen,x,y,text,font,text_index,color=(255,255,255)):
     clipped_text = text[:int(text_index)]
     text_surface = font.render(clipped_text, True, color)
