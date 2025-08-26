@@ -21,8 +21,8 @@ def set_im(image, width, height,alpha,flip):
     imag=image.convert_alpha()
     im=pygame.transform.smoothscale(imag, (width, height))
     im.set_alpha(alpha)
-    if flip:
-        pygame.transform.flip(im, True, False)
+    if not flip:
+        im=pygame.transform.flip(im, True, False)
     return im
 
 def get_frame(folder_path, width, height, alpha):

@@ -19,7 +19,7 @@ class Spirit():
         self.attack_time=0
         self.damage=20
         self.max_health=100
-        self.health=100
+        self.health=self.max_health
         self.reroad=True
         self.line=line
         self.distance=100
@@ -142,7 +142,7 @@ class Stone_Spirit(Spirit):
         self.name = "stone"
         self.hitbox.center=pos.center
         self.im_size=120
-        self.y_gap = 15
+        self.y_gap = 20
         self.attack_time=7
         self.distance=60
 

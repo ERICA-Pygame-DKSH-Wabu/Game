@@ -2,27 +2,28 @@
 import json
 import pygame
 from pos import *
+from cut import *
 pygame.init()
 
 with open("story_wave.json", "r", encoding="utf-8") as f:
     wave_data = json.load(f)
 
 wave_loaded = False
-
-
+alpha=175
+click=False
 spirit_type=["water","fire","grass","light","stone","dark"]
 screen_width = 1280
 screen_height = 640
 screen = pygame.display.set_mode((screen_width, screen_height))
 from util import *
 subt_bg=get_frame("asset/ui/subtitle_bg",1280,840,255)
-boss_font = get_font("asset/boss.ttf",64)
+boss_font = get_font("asset/witch.ttf",36)
 monster_font = get_font("asset/monster.ttf", 36)
 witch_font = get_font("asset/witch.ttf", 36)
 
 smoke_effect_l=get_frame("asset/ui/appear_effect",120,120,150)
 explosion_effect=get_frame("asset/ui/explosion_effect",160,160,200)
-pygame.display.set_caption("forest witch")
+pygame.display.set_caption("witch")
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -41,10 +42,10 @@ mana=10000
 witch_frame_index=0
 witch_frame=get_frame("asset/ui/witch",640,640,230)
 start_im=get_im("asset/ui/start.png")
-start_im=set_im(start_im,256,256,256,False)
+start_im=set_im(start_im,256,256,256,True)
 start_background_im=get_im("asset/ui/start_background.png")
-start_background_im=set_im(start_background_im,1280, 640,256,False)
-scene=False
+start_background_im=set_im(start_background_im,1280, 640,256,True)
+scene="start"
 fade_surface = pygame.Surface((1280, 640))
 fade_surface.fill((0, 0, 0))
 fade_in = True
@@ -70,9 +71,14 @@ spirit_effect_l=[]
 
 if_story=False
 subt_bg_frame_index=0
-story_str=[["도통 익숙해질 수가 없네..이 숲은",witch_font],["그...ㅁ..해..",monster_font],["ㅍ.....기....해..",monster_font],["ㅇ...ㅙ..그..랬...어...?",monster_font],["......마 녀",boss_font],["오지마...!",boss_font]]
+story_str=[["도통 익숙해질 수가 없네....이 숲은 ",witch_font],["그...ㅁ..해.. ",monster_font],["....마 녀 ",boss_font],["ㅍ.....기....해.. ",monster_font],["하여간..못말린다니깐 ",witch_font],["ㅇ...ㅙ..그..랬...어...? ",monster_font],["멈춰...! ",boss_font]]
 text_index=0
 waiting_game=False
+story_witch=get_im("asset/ui/story_witch.png")
+story_witch=set_im(story_witch,640,640,240,False)
+story_boss=get_im("asset/ui/story_boss.png")
+story_boss=set_im(story_boss,550,550,240,True)
+change_scene="witch"
 
 wave_start_time = 0
 wave_spawn_delay = 500  
@@ -139,7 +145,19 @@ def spawn_wave(wave_num):
             if hasattr(new_mon, "set_target_rect"):
                 new_mon.set_target_rect(col_idx)
             monster_list[row_idx].append(new_mon)
-
+button_=False
+story_index=0
+story_scene=0
+cut_l=[]
+im_size=get_im("asset/story/story1/1.png")
+im_size=im_size.get_size()
+cut_l.append(get_frame("asset/story/story1",1280,640,256))
+fade_surface.set_alpha(255)
+cut_l.append(fade_surface)
+cut_l.append(get_frame("asset/story/story2",1280,640,256))
+cut_l.append(fade_surface)
+cut__l=[Cut(0,0,254,cut_l[0][0])]
+scene_change=Cut(0,0,0,fade_surface)
 wave=1
 wave_time=30
 wave_speed=1
@@ -149,7 +167,20 @@ while playing:
     mouse_pos_x, mouse_pos_y = pygame.mouse.get_pos()
     mouse_condition = pygame.mouse.get_pressed()
     key_condition = pygame.key.get_pressed()
-    if scene:
+    if scene=="story":
+        screen.fill((255,255,255))
+        try:
+            for cut_ in cut__l:
+                cut_.draw(screen)
+                if (cut_.fade_in(dt) and cut_==cut__l[-1]) and button_:
+                    cut__l.append(Cut(0,0,0,cut_l[story_scene][story_index]))
+                    story_index+=1
+                    button_=False
+        except IndexError:
+            if button_:
+                change_scene="game"
+                scene_change.i=1
+    elif scene=="game":
         if not if_story:
             text_index=0
             subt_bg_frame_index
@@ -274,6 +305,7 @@ while playing:
 
                 monster.change_frame(dt)
                 monster.draw(screen)
+                click=False
                 if first:
                     if_story=True
                 first=False
@@ -294,8 +326,14 @@ while playing:
                 effects.draw(screen)
             for button in store_btn_list:
                 button.draw(screen)
-            fade_surface.set_alpha(175)
+            if not click:
+                alpha=175
+            fade_surface.set_alpha(alpha)
             screen.blit(fade_surface,(0,0))
+            if story_str[wave-1][1]==witch_font:
+                screen.blit(story_witch,(-100,100))
+            elif story_str[wave-1][1]==boss_font:
+                screen.blit(story_boss,(screen_width-520,200))
             screen.blit(subt_bg[int(subt_bg_frame_index)],(0,screen_height//2-225))
             if int(subt_bg_frame_index)==4:
                 subt_bg_frame_index=4
@@ -304,16 +342,14 @@ while playing:
                     if int(text_index)==len(story_str[wave-1][0]):
                         text_index=len(story_str[wave-1][0])
                         if mouse_condition[0]:
-                            story_str[wave-1]=False
-                            if_story=False
+                            scene_change.i=1
                     else:    
                         text_index+=dt*0.01
             else:
                 subt_bg_frame_index+=dt*0.05
 
 
-    else:
-
+    elif scene=="start":
         screen.blit(start_background_im,(0,0))
 
         start_draw = start_im.copy()
@@ -351,8 +387,21 @@ while playing:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             playing = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            scene=True
+        if event.type == pygame.MOUSEBUTTONDOWN and scene=="start":
+            change_scene="story"
+            scene_change.i=1
+        if event.type == pygame.MOUSEBUTTONUP:
+            if scene=="story":
+                button_=True
+    
+    if scene_change.fade_inout(dt):
+        scene=change_scene
+        if scene=="story":
+            story_index=0
+        elif scene=="game" and if_story:
+            story_str[wave-1]=False
+            if_story=False
 
+    scene_change.draw(screen)
     pygame.display.flip()
 pygame.quit()

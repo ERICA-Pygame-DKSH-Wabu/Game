@@ -51,14 +51,17 @@ class Water_Monster(Monster):
         super().__init__(pos,index, m) 
         self.im_size = 110 
         self.y_gap = 10
-
+        self.distance=60
+        self.move_speed=15 
 
 class Light_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index, m) 
         self.im_size = 100 
         self.x_gap = -3
-        self.y_gap = 10 
+        self.y_gap = 10
+        self.distance=200
+        self.move_speed=12
 
 class Stone_Monster(Monster): 
     def __init__(self, pos,index,m): 
@@ -66,13 +69,17 @@ class Stone_Monster(Monster):
         self.im_size = 120 
         self.y_gap = 8
         self.x_gap = -1
+        self.distance=60
+        self.move_speed=5
 
 
 class Fire_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index, m) 
         self.y_gap = -5
-        self.im_size = 80 
+        self.im_size = 80
+        self.distance=700
+        self.move_speed=7.5
 
 
 class Dark_Monster(Monster): 
@@ -80,7 +87,9 @@ class Dark_Monster(Monster):
         super().__init__(pos,index,m) 
         self.im_size = 100 
         self.x_gap = -3
-        self.y_gap = 20 
+        self.y_gap = 20
+        self.distance=150
+        self.move_speed=10
 
 
 class Grass_Monster(Monster): 
@@ -89,3 +98,5 @@ class Grass_Monster(Monster):
         self.im_size = 60
         self.x_gap = -3
         self.y_gap = 15
+        self.distance=300
+        self.move_speed=15
