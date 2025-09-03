@@ -13,15 +13,35 @@ class Monster(Spirit):
 
     def __init__(self,pos, index, m_type):
         super().__init__(pos,index, m_type)
+        self.x=pos.centerx
         self.name = m_type 
         self.im_size = 150 
         self.target = 180
+        self.max_health=100
+        self.health=self.max_health
         self.move_speed = 10
         self.is_moving = True 
         self.has_arrived = False  
         self.index = index 
         self.target_col = 0 
         self.condition = "spin"
+    def set_hitbox(self):
+        self.hitbox.centerx=self.x
+    def draw(self,screen):
+        screen.blit(self.enemy_circle_surface, (self.x-(self.hitbox.width+10)//2,self.hitbox.bottom-30))
+
+        screen.blit(self.img,(self.hitbox.centerx-self.img.get_width()//2-self.x_gap,self.hitbox.centery-self.img.get_height()//2-20-self.y_gap))
+        if self.max_health > 0:
+            bar_width = 45
+            bar_height = 4
+            full_rect = pygame.Rect(0, 0, bar_width, bar_height)
+            full_rect.midbottom = (self.hitbox.centerx, self.hitbox.bottom)
+            ratio = max(0, min(self.health / self.max_health, 1.0))
+            curr_rect = full_rect.copy()
+            curr_rect.width = int(bar_width * ratio)
+            pygame.draw.rect(screen, (255, 0, 0), full_rect)
+            if curr_rect.width > 0:
+                pygame.draw.rect(screen, (0, 255, 0), curr_rect)
     def set_frame(self):
         self.frame=monster_frame_dict[self.name]
     def set_condition(self):
@@ -42,61 +62,78 @@ class Monster(Spirit):
 
     def move(self,dt):
         if self.condition=="idle":
-            self.hitbox.centerx-=self.speed*dt*0.04
+            self.x-=self.speed*dt*0.006
                 
 
 
 class Water_Monster(Monster): 
     def __init__(self,pos, index,m): 
-        super().__init__(pos,index, m) 
+        super().__init__(pos,index, m)
+        self.max_health=120
+        self.health=self.max_health
         self.im_size = 110 
         self.y_gap = 10
         self.distance=60
-        self.move_speed=15 
-
+        self.speed=5
+        self.attack_time=3
+        self.damage=65
 class Light_Monster(Monster): 
     def __init__(self,pos, index,m): 
-        super().__init__(pos,index, m) 
+        super().__init__(pos,index, m)
+        self.max_health=150
+        self.health=self.max_health
         self.im_size = 100 
         self.x_gap = -3
         self.y_gap = 10
         self.distance=200
-        self.move_speed=12
-
+        self.speed=3
+        self.attack_time=4
+        self.damage=80
 class Stone_Monster(Monster): 
     def __init__(self, pos,index,m): 
-        super().__init__(pos,index, m) 
+        super().__init__(pos,index, m)
+        self.max_health=230
+        self.health=self.max_health
         self.im_size = 120 
         self.y_gap = 8
         self.x_gap = -1
         self.distance=60
-        self.move_speed=5
-
+        self.speed=2
+        self.attack_time=3
+        self.damage=40
 
 class Fire_Monster(Monster): 
     def __init__(self,pos, index,m): 
-        super().__init__(pos,index, m) 
+        super().__init__(pos,index, m)
+        self.max_health=85
+        self.health=self.max_health
         self.y_gap = -5
         self.im_size = 80
-        self.distance=700
-        self.move_speed=7.5
-
+        self.distance=500
+        self.speed=1.8
+        self.damage=60
 
 class Dark_Monster(Monster): 
     def __init__(self,pos, index,m): 
-        super().__init__(pos,index,m) 
+        super().__init__(pos,index,m)
+        self.max_health=130
+        self.health=self.max_health
         self.im_size = 100 
         self.x_gap = -3
         self.y_gap = 20
         self.distance=150
-        self.move_speed=10
-
+        self.speed=3
+        self.damage=70
 
 class Grass_Monster(Monster): 
     def __init__(self,pos, index,m): 
-        super().__init__(pos,index,m) 
+        super().__init__(pos,index,m)
+        self.max_health=150
+        self.health=self.max_health
         self.im_size = 60
         self.x_gap = -3
         self.y_gap = 15
         self.distance=300
-        self.move_speed=15
+        self.speed=3.5
+        self.attack_time=5
+        self.damage=60

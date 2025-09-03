@@ -21,7 +21,7 @@ class Cut:
             return True
         return False
     def fade_inout(self,dt):
-        self.alpha+=dt*0.2*self.i
+        self.alpha+=dt*0.4*self.i
         if self.alpha>=255:
             self.alpha=255
             self.i=-1

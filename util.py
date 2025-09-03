@@ -1,5 +1,15 @@
 import pygame
 import os
+
+def invert_surface_color(surface):
+    arr = pygame.surfarray.pixels3d(surface).copy()
+    alpha = pygame.surfarray.pixels_alpha(surface).copy()
+    arr = 255 - arr  
+    new_surface = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
+    pygame.surfarray.blit_array(new_surface, arr)
+    pygame.surfarray.pixels_alpha(new_surface)[:] = alpha
+    return new_surface
+
 def get_font(path, size):
     base_path = os.path.dirname(__file__)
     full_path = os.path.join(base_path, path)
@@ -25,7 +35,7 @@ def set_im(image, width, height,alpha,flip):
         im=pygame.transform.flip(im, True, False)
     return im
 
-def get_frame(folder_path, width, height, alpha):
+def get_frame(folder_path, width, height, alpha,flip=True):
     base_path = os.path.dirname(__file__)
     full_folder_path = os.path.join(base_path, folder_path)
 
@@ -38,7 +48,7 @@ def get_frame(folder_path, width, height, alpha):
     for filename in filenames:
         full_image_path = os.path.join(folder_path, filename)
         image = get_im(full_image_path)
-        resized_image = set_im(image, width, height, alpha,True)
+        resized_image = set_im(image, width, height, alpha,flip)
         frame_list.append(resized_image)
 
     return frame_list

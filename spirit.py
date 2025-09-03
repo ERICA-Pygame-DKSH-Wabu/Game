@@ -9,18 +9,20 @@ for i in l:
             "spin": get_frame(f"asset/spirit/{i}/spin",spirit_size[l.index(i)],spirit_size[l.index(i)],255),
         }
 for i in spirit_frame_dict["fire"]["idle"]:
-    spirit_frame_dict["fire"]["idle"][ spirit_frame_dict["fire"]["idle"].index(i)]=set_im(i,138,138,255,False)
+    spirit_frame_dict["fire"]["idle"][ spirit_frame_dict["fire"]["idle"].index(i)]=set_im(i,138,138,255,True)
+# for i in spirit_frame_dict["water"]["attack"]:
+#     spirit_frame_dict["water"]["attack"][ spirit_frame_dict["water"]["attack"].index(i)]=set_im(i,120,120,255,True)
 
 class Spirit():
     def __init__(self,pos,line, name=""):
         self.fade=255
         self.dead=False
-        self.if_attack=True
+        self.if_attack=False
         self.attack_time=0
         self.damage=20
-        self.max_health=100
+        self.max_health=200
         self.health=self.max_health
-        self.reroad=True
+        self.reroad=False
         self.line=line
         self.distance=100
         self.target=False
@@ -65,7 +67,7 @@ class Spirit():
         screen.blit(self.enemy_circle_surface, (self.hitbox.centerx-(self.hitbox.width+10)//2,self.hitbox.bottom-30))
 
         screen.blit(self.img,(self.hitbox.centerx-self.img.get_width()//2-self.x_gap,self.hitbox.centery-self.img.get_height()//2-20-self.y_gap))
-        if self.max_health > 0:
+        if self.health > 0:
             bar_width = 45
             bar_height = 4
             full_rect = pygame.Rect(0, 0, bar_width, bar_height)
@@ -117,6 +119,8 @@ class Spirit():
 class Water_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)
+        self.max_health=180
+        self.health=self.max_health
         self.name = "water"
         self.hitbox.center=pos.center
         self.im_size=96
@@ -129,46 +133,56 @@ class Water_Spirit(Spirit):
 class Light_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)
+        self.max_health=180
+        self.health=self.max_health
         self.name = "light"
         self.hitbox.center=pos.center
         self.im_size=120
         self.y_gap = 5
         self.attack_time=5
         self.distance=1280-self.hitbox.centerx
-
+        self.damage=30
 class Stone_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)
+        self.max_health=220
+        self.health=self.max_health
         self.name = "stone"
         self.hitbox.center=pos.center
         self.im_size=120
-        self.y_gap = 20
         self.attack_time=7
         self.distance=60
-
+        self.y_gap=5
+        
 class Fire_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)
+        self.max_health=200
+        self.health=self.max_health
         self.name = "fire"
         self.hitbox.center=pos.center
         self.im_size=130
         self.y_gap = 10
         self.attack_time=6
         self.distance=250
-
+        self.damage=45
 class Dark_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)
+        self.max_health=180
+        self.health=self.max_health
         self.name = "dark"
         self.hitbox.center=pos.center
         self.im_size=120
         self.y_gap = 5
         self.attack_time=5
         self.distance=1280-self.hitbox.centerx
-
+        self.damage=30
 class Grass_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)
+        self.max_health=140
+        self.health=self.max_health
         self.name = "grass"
         self.hitbox.center=pos.center
         self.y_gap = 7
