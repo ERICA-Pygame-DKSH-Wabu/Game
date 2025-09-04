@@ -55,7 +55,7 @@ YELLOW = (255, 255, 0)
 BLACK = (0, 0, 0) 
 
 center = ( 208, screen_height // 2+20)
-mana_list = [Mana(center) for i in range(12)]
+mana_list = [Mana(center) for i in range(2)]
 orbit_angle = 0.7 % 360
 
 witch_frame_index=0
@@ -90,8 +90,7 @@ spirit_effect_l=[]
 appear=False
 if_story=False
 subt_bg_frame_index=0
-#story_l=[["도통 익숙해질 수가 없네....이 숲은 ",witch_font],False,False,["그...ㅁ..해.. ",monster_font],False,False,False,["....마 녀 ",boss_font],False,False,["ㅍ.....기....해.. ",monster_font],False,False,["하여간..못말린다니깐 ",witch_font],False,False,False,["ㅇ...ㅙ..그..랬...어...? ",monster_font],False,["멈춰...! ",boss_font]]
-story_l=[["ㅅㅂ...",witch_font],False]
+story_l=[["도통 익숙해질 수가 없네....이 숲은 ",witch_font],False,False,["그...ㅁ..해.. ",monster_font],False,False,False,["....마 녀 ",boss_font],False,False,["ㅍ.....기....해.. ",monster_font],False,False,["하여간..못말린다니깐 ",witch_font],False,False,False,["ㅇ...ㅙ..그..랬...어...? ",monster_font],False,["멈춰...! ",boss_font],["더 보여줄게 남았니?",witch_font],[".....",boss_font]]
 text_index=0
 waiting_game=False
 story_witch=get_im("asset/ui/story_witch.png")
@@ -101,9 +100,6 @@ story_boss=set_im(story_boss,550,550,240,True)
 change_scene="witch"
 effect_frame=get_frame("asset/effect",50,50,235)
 full_charge=False
-
-wave_start_time = 0
-wave_spawn_delay = 500  
 monsters_spawned = 0
 monster_count = 0
 all_monsters_arrived = False
@@ -120,7 +116,6 @@ for i in range(4):
     rect = pygame.Rect(x, y, 50, 50)
     monster_pos_list.append(Pos(rect,(i,3-spirit)))
 monster_pos_list.reverse()
-center
 
 for monster in range(6):
     store_btn_list.append(Store_Button(screen_width-100*monster-100,50,pygame.Rect(screen_width-100*monster-100,60,70,80),spirit_type[monster]))
@@ -170,18 +165,21 @@ def spawn_wave(wave_num):
 button_=False
 story_index=0
 story_scene=0
-cut_l=[]
 im_size=get_im("asset/story/story1/1.png")
 im_size=im_size.get_size()
-cut_l.append(get_frame("asset/story/story1",1280,640,256))
-fade_surface.set_alpha(255)
-cut_l.append(fade_surface)
-cut_l.append(get_frame("asset/story/story2",1280,640,256))
-cut_l.append(fade_surface)
-cut__l=[Cut(0,0,254,cut_l[0][0])]
+
+scene_l = [
+    get_frame("asset/story/story1", 1280, 640, 256),
+    get_frame("asset/story/story2", 1280, 640, 256)]
+
+story_scene = 0
+story_index = 0
+button_ = False
+cut_l=[]
+
 scene_change=Cut(0,0,0,fade_surface)
 wave=1
-wave_time=30
+wave_time=0
 wave_speed=1
 
 def run_game():
@@ -191,9 +189,6 @@ def run_game():
     global mana_list, spirit_list, monster_list, effect_list, monster_effect_l, spirit_effect_l, located_rect, store_btn_list
     global witch1, story_l, background_im, subt_bg, story_witch, story_boss, effect_frame, witch_font, boss_font, monster_font
     global fade_surface, witch_frame, start_im, start_background_im, skip, im_size, cut_l, cut__l, scene_change
-    global ending_mode, ending_step 
-    ending_mode = False
-    ending_step = 0
     fps = pygame.time.Clock()
     playing = True
     first = True
@@ -203,36 +198,43 @@ def run_game():
         mouse_pos_x, mouse_pos_y = pygame.mouse.get_pos()
         mouse_condition = pygame.mouse.get_pressed()
         key_condition = pygame.key.get_pressed()
+        if scene == "story":
+            screen.fill((0, 0, 0))
 
-        if scene=="story":
-            screen.fill((255,255,255))
-            try:
-                for cut_ in cut__l:
-                    cut_.draw(screen)
-                    if (cut_.fade_in(dt) and cut_==cut__l[-1]) and button_:
-                        cut__l.append(Cut(0,0,0,cut_l[story_scene][story_index]))
-                        story_index+=1
-                        button_=False
-            except IndexError:
-                if button_:
-                    change_scene="game"
-                    scene_change.i=1
-            screen.blit(skip,(-32,screen_height-160))
+            for cut in cut_l:
+                cut.draw(screen)
+
+            if not scene_change.i == 1:
+                screen.blit(skip,(-32,screen_height-160))
+                if not cut_l and story_scene < len(scene_l):
+                    story_index = 0
+                    cut_l.append(Cut(0, 0, 0, scene_l[story_scene][story_index]))
+                    story_index += 1
+
+                elif cut_l and cut_l[-1].fade_in(dt) and button_:
+                    if story_index < len(scene_l[story_scene]):
+                        button_ = False
+                        cut_l.append(Cut(0, 0, 0, scene_l[story_scene][story_index]))
+                        story_index += 1
+                    else:
+                        cut_l = []
+                        story_index = 0
+                        story_scene += 1
+                        scene_change.i = 1
+                        change_scene = "game"
+                        button_ = False
+
 
         elif scene=="game":
             orbit_angle = (orbit_angle + 0.7) % 360
 
-            if wave > len(story_l) and not ending_mode:
-                ending_mode = True
+            if wave > len(story_l):
                 scene_change.i = 1
-                change_scene = "ending"
-
-            if ending_mode:
-                pass
+                change_scene="story"
 
             elif not if_story and wave <= len(story_l):
                 text_index = 0
-                subt_bg_frame_index
+                subt_bg_frame_index=0
                 if story_l[wave-1]:
                     if_story = True
                 screen.blit(background_im,(0,0))
@@ -274,18 +276,18 @@ def run_game():
                                         mana_list.append(Mana(center))
                                     else:
                                         if not full_charge:
-                                            for i in range(12):
-                                                if not mana_list[i].charge:
-                                                    mana_list[i].charge=True
+                                            for k in range(12):
+                                                if not mana_list[k].charge:
+                                                    mana_list[k].charge=True
                                                     break
-                                        full_charge = all(mana.charge for mana in mana_list)
+                                        full_charge=all(m.charge for m in mana_list)
                                     effect_list.append(effect(spirit.hitbox.centerx,spirit.hitbox.centery-20,spirit_attack_dict["water"]))
                                 else:
                                     attack=attack_effect(spirit.target,spirit.hitbox.centery,spirit_attack_dict[spirit.name],32,spirit.damage)
                                     for j in monster_list:
-                                        for i in j:
-                                            if i.hitbox.colliderect(attack.hitbox):
-                                                i.health-=attack.damage
+                                        for m in j:
+                                            if m.hitbox.colliderect(attack.hitbox):
+                                                m.health-=attack.damage
                                     spirit_effect_l.append(attack)
                                 spirit.if_attack=False
                             if spirit.health<=0:
@@ -293,7 +295,6 @@ def run_game():
                             if spirit.if_dead(dt):
                                 effect_list.append(effect(spirit.hitbox.centerx,spirit.hitbox.centery,smoke_effect_l))
                                 spirit_list[spirit.line][spirit_list[spirit.line].index(spirit)]=False
-
                 for line_monsters in monster_list:
                     for monster in line_monsters:
                         monster.set_target(located_rect[monster.index])
@@ -304,49 +305,83 @@ def run_game():
                             attack=attack_effect(monster.target,monster.hitbox.top,monster_attack_dict[monster.name],16,monster.damage)
                             monster.if_attack=False
                             for j in spirit_list:
-                                for i in j:
-                                    if i and i.hitbox.colliderect(attack.hitbox):
-                                        i.health-=attack.damage
+                                for s in j:
+                                    if s and s.hitbox.colliderect(attack.hitbox):
+                                        s.health-=attack.damage
                             monster_effect_l.append(attack)
-                        monster.draw(screen)       
+                        monster.draw(screen)
                         if monster.if_dead(dt):
                             effect_list.append(effect(monster.hitbox.centerx,monster.hitbox.centery,smoke_effect_l))
                             monster_list[monster.line]=[i for i in monster_list[monster.line] if not monster==i]
                         else:
                             monster.move(dt)
-
+                dragging_btn=None
+                for btn in store_btn_list:
+                    if btn.dragging:
+                        dragging_btn=btn
+                        break
                 for button in store_btn_list:
                     button.set_hitbox()
-                    button.drag((mouse_pos_x, mouse_pos_y), mouse_condition, spirit_pos_list)
+                    if dragging_btn is None:
+                        button.drag((mouse_pos_x,mouse_pos_y),mouse_condition,spirit_pos_list)
+                    elif button is dragging_btn:
+                        data=button.drag((mouse_pos_x,mouse_pos_y),mouse_condition,spirit_pos_list)
+                        if data:
+                            if located_rect[data[2][1]][data[2][0]]:
+                                break
+                            else:
+                                appear=True
+                                effect_list.append(effect(center[0]+55,center[1]+40,effect_frame))
+                                if data[1]=="dark" and len(mana_list)>=5:
+                                    spirit_list[data[2][1]][data[2][0]]=Dark_Spirit(data[0],data[2][1])
+                                    mana_list=mana_list[:-5]
+                                if data[1]=="light" and len(mana_list)>=5:
+                                    spirit_list[data[2][1]][data[2][0]]=Light_Spirit(data[0],data[2][1])
+                                    mana_list=mana_list[:-5]
+                                if data[1]=="water" and len(mana_list)>=2:
+                                    spirit_list[data[2][1]][data[2][0]]=Water_Spirit(data[0],data[2][1])
+                                    mana_list=mana_list[:-2]
+                                if data[1]=="fire" and len(mana_list)>=4:
+                                    spirit_list[data[2][1]][data[2][0]]=Fire_Spirit(data[0],data[2][1])
+                                    mana_list=mana_list[:-4]
+                                if data[1]=="grass" and len(mana_list)>=4:
+                                    spirit_list[data[2][1]][data[2][0]]=Grass_Spirit(data[0],data[2][1])
+                                    mana_list=mana_list[:-4]
+                                if data[1]=="stone" and len(mana_list)>=3:
+                                    spirit_list[data[2][1]][data[2][0]]=Stone_Spirit(data[0],data[2][1])
+                                    mana_list=mana_list[:-3]
+                                if spirit_list[data[2][1]][data[2][0]]:
+                                    spirit_list[data[2][1]][data[2][0]].set_frame()
+                                    located_rect[data[2][1]][data[2][0]]=data[0]
+                                    effect_list.append(effect(data[0].centerx,data[0].centery,smoke_effect_l))
                     button.change_frame(dt)
                     button.draw(screen)
-
-                for i, mana in enumerate(mana_list):
-                    mana.update(i, len(mana_list), orbit_angle)
+                for i,mana in enumerate(mana_list):
+                    mana.update(i,len(mana_list),orbit_angle)
                     if mana.y<=mana.center[1]:
                         mana.draw(screen)
                 witch1.set_condition(mouse_condition[0],appear)
                 witch1.change_frame(dt)
                 witch1.draw(screen)
                 appear=False
-                for i, mana in enumerate(mana_list):
+                for i,mana in enumerate(mana_list):
                     if mana.y>mana.center[1]:
                         mana.draw(screen)
-                for effects in effect_list:
-                    effects.draw(screen)
-                    if effects.change_frame(dt):
-                        effect_list = [i for i in effect_list if not i == effects]
-                for effects in monster_effect_l:
-                    effects.draw(screen)
-                    if effects.change_frame(dt):
-                        monster_effect_l = [i for i in monster_effect_l if not i == effects]
-                for effects in spirit_effect_l:
-                    effects.draw(screen)
-                    if effects.change_frame(dt):
-                        spirit_effect_l = [i for i in spirit_effect_l if not i == effects]
-                progress = min(wave_time / 100, 1)
-                pygame.draw.rect(screen, (0, 0, 0), (0, 632, screen_width, 8))
-                pygame.draw.rect(screen, (255, 0, 0), (0, 632, screen_width * progress, 8))
+                for ef in effect_list:
+                    ef.draw(screen)
+                    if ef.change_frame(dt):
+                        effect_list=[e for e in effect_list if not e==ef]
+                for ef in monster_effect_l:
+                    ef.draw(screen)
+                    if ef.change_frame(dt):
+                        monster_effect_l=[e for e in monster_effect_l if not e==ef]
+                for ef in spirit_effect_l:
+                    ef.draw(screen)
+                    if ef.change_frame(dt):
+                        spirit_effect_l=[e for e in spirit_effect_l if not e==ef]
+                progress=min(wave_time/100,1)
+                pygame.draw.rect(screen,(0,0,0),(0,632,screen_width,8))
+                pygame.draw.rect(screen,(255,0,0),(0,632,screen_width*progress,8))
                 click=False
                 if first:
                     if_story=True
@@ -391,23 +426,6 @@ def run_game():
                 else:
                     subt_bg_frame_index+=dt*0.05
 
-        elif scene=="ending":
-            screen.blit(background_im,(0,0))
-            if ending_step==0:
-                screen.blit(story_witch,(-100,100))
-                draw_text(screen,screen_width//2,screen_height-100,"더 보여줄게 남았어?",witch_font,text_index)
-                if mouse_condition[0]:
-                    ending_step=1
-                    text_index=0
-            elif ending_step==1:
-                screen.blit(story_boss,(screen_width-520,200))
-                draw_text(screen,screen_width//2,screen_height-100,"....",boss_font,text_index)
-                if mouse_condition[0]:
-                    scene_change.i=1
-                    change_scene="story"
-                    ending_mode=False
-                    ending_step=0
-
         elif scene=="start":
             screen.blit(start_background_im,(0,0))
             start_draw = start_im.copy()
@@ -449,11 +467,16 @@ def run_game():
                 change_scene="story"
                 scene_change.i=1
             if event.type == pygame.MOUSEBUTTONUP:
+                click=True 
                 if scene=="story":
                     button_=True
-                    if mouse_pos_y>=screen_height-192 and mouse_pos_x<=192:
+                    if mouse_pos_y>=screen_height-192 and mouse_pos_x<=192 and story_scene==0:
                         change_scene="game"
                         scene_change.i=1
+                        cut_l = []
+                        story_index = 0
+                        story_scene += 1
+                        button_=False
 
         if scene_change.fade_inout(dt):
             scene=change_scene
