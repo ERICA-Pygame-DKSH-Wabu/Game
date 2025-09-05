@@ -178,6 +178,13 @@ class Dark_Spirit(Spirit):
         self.attack_time=5
         self.distance=1280-self.hitbox.centerx
         self.damage=30
+    def set_target(self, target_l):
+        if target_l:
+            candidates = [obj for obj in target_l if obj.hitbox.centerx >= self.hitbox.centerx and obj.health>0]
+            if candidates:
+                self.target = max(candidates, key=lambda obj: obj.hitbox.centerx).hitbox.centerx
+            else:
+                self.target = False
 class Grass_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)

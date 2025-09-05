@@ -9,7 +9,8 @@ frame = {
 class witch:
     def __init__(self, hitbox):
         self.hitbox = hitbox
-        self.health = 500
+        self.max_health = 1000
+        self.health = 1000
         self.frame = frame
         self.fade = 255
         self.condition = "idle"
@@ -25,6 +26,17 @@ class witch:
 
     def draw(self, screen):
         screen.blit(self.img, (150, 320))
+        if self.health > 0:
+            bar_width = 70
+            bar_height = 5
+            full_rect = pygame.Rect(0, 0, bar_width, bar_height)
+            full_rect.midbottom = (218,640 // 2+20+160)
+            ratio = max(0, min(self.health / self.max_health, 1.0))
+            curr_rect = full_rect.copy()
+            curr_rect.width = int(bar_width * ratio)
+            pygame.draw.rect(screen, (255, 0, 0), full_rect)
+            if curr_rect.width > 0:
+                pygame.draw.rect(screen, (0, 255, 0), curr_rect)
 
     def set_condition(self, if_button_pressed, appear):
         self.appear = appear  # 외부 인자 반영

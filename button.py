@@ -29,7 +29,7 @@ class Store_Button(Button):
         self.frame_index=0
 
         self.frame=get_frame(f"asset/ui/store_btn/{self.s_type}",self.im_size,self.im_size,255)
-        self.im = self.frame[0]
+        self.im = self.frame[10]
         
 
         self.string_im=[]

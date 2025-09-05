@@ -69,7 +69,7 @@ class Monster(Spirit):
 class Water_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index, m)
-        self.max_health=120
+        self.max_health=125
         self.health=self.max_health
         self.im_size = 110 
         self.y_gap = 10
@@ -80,19 +80,19 @@ class Water_Monster(Monster):
 class Light_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index, m)
-        self.max_health=150
+        self.max_health=100
         self.health=self.max_health
         self.im_size = 100 
         self.x_gap = -3
         self.y_gap = 10
-        self.distance=200
+        self.distance=95
         self.speed=3
         self.attack_time=4
-        self.damage=80
+        self.damage=60
 class Stone_Monster(Monster): 
     def __init__(self, pos,index,m): 
         super().__init__(pos,index, m)
-        self.max_health=230
+        self.max_health=200
         self.health=self.max_health
         self.im_size = 120 
         self.y_gap = 8
@@ -105,7 +105,7 @@ class Stone_Monster(Monster):
 class Fire_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index, m)
-        self.max_health=85
+        self.max_health=65
         self.health=self.max_health
         self.y_gap = -5
         self.im_size = 80
@@ -116,19 +116,19 @@ class Fire_Monster(Monster):
 class Dark_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index,m)
-        self.max_health=130
+        self.max_health=110
         self.health=self.max_health
         self.im_size = 100 
         self.x_gap = -3
         self.y_gap = 20
-        self.distance=150
+        self.distance=85
         self.speed=3
         self.damage=70
 
 class Grass_Monster(Monster): 
     def __init__(self,pos, index,m): 
         super().__init__(pos,index,m)
-        self.max_health=150
+        self.max_health=110
         self.health=self.max_health
         self.im_size = 60
         self.x_gap = -3

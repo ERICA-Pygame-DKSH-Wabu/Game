@@ -12,6 +12,7 @@ wave_loaded = False
 alpha=175
 click=False
 spirit_type=("water","fire","grass","light","stone","dark")
+price=(2,4,4,5,3,5)
 screen_width = 1280
 screen_height = 640
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -26,6 +27,7 @@ from background import *
 from mana import *
 witch1=witch([pygame.Rect(210+25*i,screen_height - (i + 1) * 60 - 40, 32,32) for i in range(4)])
 subt_bg=get_frame("asset/ui/subtitle_bg",1280,840,255)
+subt_bg1=get_frame("asset/ui/subtitle_bg",720,840,255)
 boss_font = get_font("asset/witch.ttf",36)
 monster_font = get_font("asset/monster.ttf", 36)
 witch_font = get_font("asset/witch.ttf", 36)
@@ -57,7 +59,6 @@ BLACK = (0, 0, 0)
 center = ( 208, screen_height // 2+20)
 mana_list = [Mana(center) for i in range(2)]
 orbit_angle = 0.7 % 360
-
 witch_frame_index=0
 witch_frame=get_frame("asset/ui/witch",640,640,230)
 start_im=get_im("asset/ui/start.png")
@@ -90,7 +91,7 @@ spirit_effect_l=[]
 appear=False
 if_story=False
 subt_bg_frame_index=0
-story_l=[["도통 익숙해질 수가 없네....이 숲은 ",witch_font],False,False,["그...ㅁ..해.. ",monster_font],False,False,False,["....마 녀 ",boss_font],False,False,["ㅍ.....기....해.. ",monster_font],False,False,["하여간..못말린다니깐 ",witch_font],False,False,False,["ㅇ...ㅙ..그..랬...어...? ",monster_font],False,["멈춰...! ",boss_font],["더 보여줄게 남았니?",witch_font],[".....",boss_font]]
+story_l=[["도통 익숙해질 수가 없네....이 숲은 ",witch_font],False,False,False,["그...ㅁ..해.. ",monster_font],False,False,False,["....마 녀 ",boss_font],False,["ㅍ.....기....해.. ",monster_font],False,False,["하여간..못말린다니깐 ",witch_font],False,False,False,["ㅇ...ㅙ..그..랬...어...? ",monster_font],False,["그만해..! ",boss_font],["피곤하네...이짓도",witch_font],[".....",boss_font]]
 text_index=0
 waiting_game=False
 story_witch=get_im("asset/ui/story_witch.png")
@@ -116,7 +117,6 @@ for i in range(4):
     rect = pygame.Rect(x, y, 50, 50)
     monster_pos_list.append(Pos(rect,(i,3-spirit)))
 monster_pos_list.reverse()
-
 for monster in range(6):
     store_btn_list.append(Store_Button(screen_width-100*monster-100,50,pygame.Rect(screen_width-100*monster-100,60,70,80),spirit_type[monster]))
 
@@ -125,7 +125,9 @@ background_im=set_im(background_im, 1280, 640,256,True)
 fps = pygame.time.Clock()
 playing = True
 first=True
-mana_list
+
+tuto_index=0
+tuto_str_index=0
 def spawn_wave(wave_num):
     if wave_num < 1 or wave_num > len(wave_data):
         return
@@ -162,6 +164,8 @@ def spawn_wave(wave_num):
             if hasattr(new_mon, "set_target_rect"):
                 new_mon.set_target_rect(col_idx)
             monster_list[row_idx].append(new_mon)
+tuto=True
+damaged=False
 button_=False
 story_index=0
 story_scene=0
@@ -181,14 +185,15 @@ scene_change=Cut(0,0,0,fade_surface)
 wave=1
 wave_time=0
 wave_speed=1
-
+change=False
+tuto_str_l=["마나는 가장 기본적인 자원입니다.","물의 정령을 소환해 마나를 충전하십시오.","마나를 사용해 정령을 소환할 수 있습니다.","웨이브가 시작될때 마다 몬스터가 몰려옵니다.","정령들로 몬스터를 물리치십시오."]
 def run_game():
     global playing, alpha, click, orbit_angle, witch_frame_index, scene, fade_in, fade_alpha, start_alpha, start_dir, start_pulse
     global appear, if_story, subt_bg_frame_index, text_index, waiting_game, change_scene, full_charge, monsters_spawned, monster_count
     global all_monsters_arrived, button_, story_index, story_scene, wave, wave_time, wave_speed, first
     global mana_list, spirit_list, monster_list, effect_list, monster_effect_l, spirit_effect_l, located_rect, store_btn_list
-    global witch1, story_l, background_im, subt_bg, story_witch, story_boss, effect_frame, witch_font, boss_font, monster_font
-    global fade_surface, witch_frame, start_im, start_background_im, skip, im_size, cut_l, cut__l, scene_change
+    global witch1, story_l, background_im, subt_bg, story_witch, story_boss, effect_frame, witch_font, boss_font, monster_font,change
+    global fade_surface, witch_frame, start_im, start_background_im, skip, im_size, cut_l,price, scene_change,tuto,tuto_str_index,tuto_index,tuto_str_l
     fps = pygame.time.Clock()
     playing = True
     first = True
@@ -241,11 +246,13 @@ def run_game():
                 if first:
                     fade_surface.set_alpha(175)
                     screen.blit(fade_surface,(0,0))
+                if wave>=19:
+                    wave_speed=1000
+                wave_time += dt * wave_speed * 0.005
                 if wave_time > 100:
                     spawn_wave(wave)
                     wave += 1
                     wave_time = 0
-                wave_time += dt * wave_speed * 0.005
 
                 for i in spirit_list:
                     for spirit in i:
@@ -304,6 +311,10 @@ def run_game():
                         if monster.condition=="attack" and int(monster.frame_index)==monster.attack_time and monster.if_attack:
                             attack=attack_effect(monster.target,monster.hitbox.top,monster_attack_dict[monster.name],16,monster.damage)
                             monster.if_attack=False
+                            for rect in witch1.hitbox:
+                                if rect.colliderect(attack.hitbox):
+                                    witch1.health-=attack.damage
+                                    damaged=True
                             for j in spirit_list:
                                 for s in j:
                                     if s and s.hitbox.colliderect(attack.hitbox):
@@ -354,7 +365,10 @@ def run_game():
                                     spirit_list[data[2][1]][data[2][0]].set_frame()
                                     located_rect[data[2][1]][data[2][0]]=data[0]
                                     effect_list.append(effect(data[0].centerx,data[0].centery,smoke_effect_l))
-                    button.change_frame(dt)
+                    if price[spirit_type.index(button.s_type)]<=len(mana_list):    
+                        button.change_frame(dt)
+                    else:
+                        button.im=button.frame[0]
                     button.draw(screen)
                 for i,mana in enumerate(mana_list):
                     mana.update(i,len(mana_list),orbit_angle)
@@ -404,27 +418,96 @@ def run_game():
                     effects.draw(screen)
                 for button in store_btn_list:
                     button.draw(screen)
-                if not click:
-                    alpha=175
-                fade_surface.set_alpha(alpha)
-                screen.blit(fade_surface,(0,0))
-                if story_l[wave-1][1]==witch_font:
-                    screen.blit(story_witch,(-100,100))
-                elif story_l[wave-1][1]==boss_font:
-                    screen.blit(story_boss,(screen_width-520,200))
-                screen.blit(subt_bg[int(subt_bg_frame_index)],(0,screen_height//2-225))
-                if int(subt_bg_frame_index)==4:
-                    subt_bg_frame_index=4
-                    if story_l[wave-1]:
-                        draw_text(screen,screen_width//2,screen_height-100,story_l[wave-1][0],story_l[wave-1][1],text_index)
-                        if int(text_index)==len(story_l[wave-1][0]):
-                            text_index=len(story_l[wave-1][0])
-                            if mouse_condition[0]:
-                                scene_change.i=1
-                        else:    
-                            text_index+=dt*0.01
+                for i,mana in enumerate(mana_list):
+                    if mana.y<=mana.center[1]:
+                        mana.draw(screen)
+                witch1.draw(screen)
+                appear=False
+                for i,mana in enumerate(mana_list):
+                    if mana.y>mana.center[1]:
+                        mana.draw(screen)
+                if tuto:
+                    if not change:
+                        subt_bg_frame_index += dt * 0.035
+                        tuto_str_index += dt * 0.01
+                    if tuto_index >= len(tuto_str_l) - 1:
+                        tuto_index = len(tuto_str_l) - 1
+                        tuto_str_index = len(tuto_str_l[tuto_index])
+                        if button_:
+                            change = True
+                            button_ = False
+                            subt_bg_frame_index = 0
+                            scene_change.i = 1
+
+                    if len(tuto_str_l[tuto_index]) <= int(tuto_str_index):
+                        tuto_str_index = len(tuto_str_l[tuto_index])
+                        if button_ and not change:
+                            button_ = False
+                            tuto_index += 1
+                            tuto_str_index = 0
+
+                    fade_surface.set_alpha(175)
+                    screen.blit(fade_surface, (0, 0))
+
+                    frame_idx = int(subt_bg_frame_index)
+                    if tuto_index==0:
+                        for i,mana in enumerate(mana_list):
+                            mana.update(i,len(mana_list),orbit_angle)
+                            mana.draw(screen)
+                    elif tuto_index==1:
+                        store_btn_list[0].im=store_btn_list[0].frame[10]
+                        store_btn_list[0].draw(screen)
+                    elif tuto_index==2:
+                        for button in store_btn_list:
+                            button.im=button.frame[10]
+                            button.draw(screen)
+                    elif tuto_index==3:
+                        pygame.draw.rect(screen,(255,0,0),(0,632,screen_width-420,8))
+
+                    if frame_idx >= len(subt_bg1):
+                        frame_idx = len(subt_bg1) - 1
+
+                    screen.blit(
+                        subt_bg1[frame_idx],
+                        (
+                            screen_width // 2 - subt_bg1[frame_idx].get_width() // 2,
+                            screen_height // 2 - subt_bg1[frame_idx].get_height() // 2 - 15,
+                        ),
+                    )
+
+                    if frame_idx == 4 and tuto_index < len(tuto_str_l):
+                        draw_text(
+                            screen,
+                            screen_width // 2,
+                            screen_height // 2,
+                            tuto_str_l[tuto_index],
+                            witch_font,
+                            int(tuto_str_index),
+                            (255, 255, 255),
+                        )
+
                 else:
-                    subt_bg_frame_index+=dt*0.05
+                    if not click:
+                        alpha=175
+                    fade_surface.set_alpha(alpha)
+                    screen.blit(fade_surface,(0,0))
+                    if story_l[wave-1][1]==witch_font:
+                        screen.blit(story_witch,(-100,100))
+                    elif story_l[wave-1][1]==boss_font:
+                        screen.blit(story_boss,(screen_width-520,200))
+                    screen.blit(subt_bg[int(subt_bg_frame_index)],(0,screen_height//2-225))
+                    if int(subt_bg_frame_index)==4:
+                        subt_bg_frame_index=4
+                        if story_l[wave-1]:
+                            draw_text(screen,screen_width//2,screen_height-100,story_l[wave-1][0],story_l[wave-1][1],text_index)
+                            if int(text_index)==len(story_l[wave-1][0]):
+                                text_index=len(story_l[wave-1][0])
+                                if mouse_condition[0]:
+                                    scene_change.i=1
+                            else:    
+                                text_index+=dt*0.01
+                    else:
+                        subt_bg_frame_index+=dt*0.035
 
         elif scene=="start":
             screen.blit(start_background_im,(0,0))
@@ -468,7 +551,7 @@ def run_game():
                 scene_change.i=1
             if event.type == pygame.MOUSEBUTTONUP:
                 click=True 
-                if scene=="story":
+                if scene=="story" or tuto:
                     button_=True
                     if mouse_pos_y>=screen_height-192 and mouse_pos_x<=192 and story_scene==0:
                         change_scene="game"
@@ -483,8 +566,11 @@ def run_game():
             if scene=="story":
                 story_index=0
             elif scene=="game" and if_story:
-                story_l[wave-1]=False
-                if_story=False
+                if tuto:
+                    tuto=False
+                else:
+                    story_l[wave-1]=False
+                    if_story=False
 
         scene_change.draw(screen)
         pygame.display.flip()
