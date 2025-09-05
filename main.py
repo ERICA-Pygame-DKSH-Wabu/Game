@@ -104,7 +104,10 @@ full_charge=False
 monsters_spawned = 0
 monster_count = 0
 all_monsters_arrived = False
- 
+
+
+funny=get_frame("asset/funny",700,500,256)
+funny_index=0
 for i in range(6):
     for spirit in range(4):
         x = i * 80 + spirit * 25 + 260
@@ -180,7 +183,7 @@ story_scene = 0
 story_index = 0
 button_ = False
 cut_l=[]
-
+reset=False
 scene_change=Cut(0,0,0,fade_surface)
 wave=1
 wave_time=0
@@ -190,19 +193,60 @@ tuto_str_l=["마나는 가장 기본적인 자원입니다.","물의 정령을 �
 def run_game():
     global playing, alpha, click, orbit_angle, witch_frame_index, scene, fade_in, fade_alpha, start_alpha, start_dir, start_pulse
     global appear, if_story, subt_bg_frame_index, text_index, waiting_game, change_scene, full_charge, monsters_spawned, monster_count
-    global all_monsters_arrived, button_, story_index, story_scene, wave, wave_time, wave_speed, first
+    global all_monsters_arrived, button_, story_index, story_scene, wave, wave_time, wave_speed, first,reset
     global mana_list, spirit_list, monster_list, effect_list, monster_effect_l, spirit_effect_l, located_rect, store_btn_list
     global witch1, story_l, background_im, subt_bg, story_witch, story_boss, effect_frame, witch_font, boss_font, monster_font,change
-    global fade_surface, witch_frame, start_im, start_background_im, skip, im_size, cut_l,price, scene_change,tuto,tuto_str_index,tuto_index,tuto_str_l
+    global fade_surface, witch_frame,funny,funny_index ,start_im, start_background_im, skip, im_size, cut_l,price, scene_change,tuto,tuto_str_index,tuto_index,tuto_str_l
     fps = pygame.time.Clock()
     playing = True
     first = True
-
     while playing:
         dt = fps.tick(60)
         mouse_pos_x, mouse_pos_y = pygame.mouse.get_pos()
         mouse_condition = pygame.mouse.get_pressed()
-        key_condition = pygame.key.get_pressed()
+        if reset:
+                    
+
+            wave = 1
+            wave_time = 0
+            wave_speed = 1
+            if_story = False
+            text_index = 0
+            subt_bg_frame_index = 0
+
+            spirit_list = [[False for _ in range(6)] for _ in range(4)]
+            monster_list = [[] for _ in range(4)]
+            effect_list = []
+            spirit_effect_l = []
+            monster_effect_l = []
+            located_rect = [[False for _ in range(6)] for _ in range(4)]
+
+            mana_list = [Mana(center) for _ in range(2)]
+            store_btn_list.clear()
+            for i in range(6):
+                store_btn_list.append(Store_Button(
+                    screen_width - 100 * i - 100, 50,
+                    pygame.Rect(screen_width - 100 * i - 100, 60, 70, 80),
+                    spirit_type[i]
+                ))
+
+            witch1 = witch([pygame.Rect(210 + 25 * i, screen_height - (i + 1) * 60 - 40, 32, 32) for i in range(4)])
+            
+            button_ = False
+            click = False
+            appear = False
+            full_charge = False
+            fade_alpha = 255
+            fade_in = True
+            witch_frame_index = 0
+            first = True
+            cut_l = []
+            story_index = 0
+            story_scene = 0
+            change = False
+            funny_index = 0
+            reset=False
+
         if scene == "story":
             screen.fill((0, 0, 0))
 
@@ -221,13 +265,16 @@ def run_game():
                         button_ = False
                         cut_l.append(Cut(0, 0, 0, scene_l[story_scene][story_index]))
                         story_index += 1
-                    else:
+                    elif story_scene==0:
                         cut_l = []
                         story_index = 0
                         story_scene += 1
                         scene_change.i = 1
                         change_scene = "game"
                         button_ = False
+                    else:
+                        scene="ending"
+                        button_=False
 
 
         elif scene=="game":
@@ -248,7 +295,7 @@ def run_game():
                     screen.blit(fade_surface,(0,0))
                 if wave>=19:
                     wave_speed=1000
-                wave_time += dt * wave_speed * 0.005
+                wave_time += dt * wave_speed * 0.005*30
                 if wave_time > 100:
                     spawn_wave(wave)
                     wave += 1
@@ -542,7 +589,15 @@ def run_game():
                     start_dir = 1
             if witch_frame_index:
                 screen.blit(witch_frame[int(witch_frame_index)],(-witch_frame[int(witch_frame_index)].get_width()//2+screen_width//2,-20))
-
+        else:
+            screen.fill((0,0,0))
+            screen.blit(funny[int(funny_index)],(screen_width//2-funny[int(funny_index)].get_width()//2,screen_height//2-funny[int(funny_index)].get_height()//2))
+            funny_index-=dt*0.02
+            if button_:
+                button_=False
+                scene_change.i=1
+                change_scene="start"
+                reset=True
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 playing = False
@@ -560,7 +615,6 @@ def run_game():
                         story_index = 0
                         story_scene += 1
                         button_=False
-
         if scene_change.fade_inout(dt):
             scene=change_scene
             if scene=="story":
