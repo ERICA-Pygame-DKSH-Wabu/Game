@@ -13,7 +13,7 @@ class effect:
     def change_frame(self,dt):
         try:
             self.im = self.frame[int(self.frame_index)]
-            self.frame_index += 0.01 * dt * self.frame_speed
+            self.frame_index += 0.008 * dt * self.frame_speed
             return False
         except IndexError:
             return True

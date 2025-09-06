@@ -1,6 +1,24 @@
 import pygame
 import os
+import pygame
 
+def remove_white(surface_list, threshold=80):
+    new_list = []
+    for surf in surface_list:
+        surf = surf.convert_alpha()
+        w, h = surf.get_size()
+        new_surf = pygame.Surface((w, h), pygame.SRCALPHA)
+
+        for x in range(w):
+            for y in range(h):
+                r, g, b, a = surf.get_at((x, y))
+                if r >= threshold and g >= threshold and b >= threshold:
+                    new_surf.set_at((x, y), (0, 0, 0, 0))
+                else:
+                    new_surf.set_at((x, y), (r, g, b, a))
+
+        new_list.append(new_surf)
+    return new_list
 def invert_surface_color(surface):
     arr = pygame.surfarray.pixels3d(surface).copy()
     alpha = pygame.surfarray.pixels_alpha(surface).copy()
