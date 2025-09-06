@@ -56,9 +56,9 @@ class Spirit():
 
     def set_target(self, target_l):
         if target_l:
-            candidates = [obj for obj in target_l if obj.hitbox.centerx >= self.hitbox.centerx and obj.health>0]
+            candidates = [obj for obj in target_l if obj.centerx >= self.hitbox.centerx]
             if candidates:
-                self.target = min(candidates, key=lambda obj: obj.hitbox.centerx).hitbox.centerx
+                self.target = min(candidates, key=lambda obj: obj.centerx).centerx
             else:
                 self.target = False
     def draw(self,screen):
@@ -140,12 +140,12 @@ class Light_Spirit(Spirit):
         self.im_size=120
         self.y_gap = 5
         self.attack_time=5
-        self.distance=1280-self.hitbox.centerx
+        self.distance=600
         self.damage=30
 class Stone_Spirit(Spirit):
     def __init__(self, pos,line):
         super().__init__(pos,line)
-        self.max_health=220
+        self.max_health=340
         self.health=self.max_health
         self.name = "stone"
         self.hitbox.center=pos.center
@@ -176,7 +176,7 @@ class Dark_Spirit(Spirit):
         self.im_size=120
         self.y_gap = 5
         self.attack_time=5
-        self.distance=1280-self.hitbox.centerx
+        self.distance=600
         self.damage=30
     def set_target(self, target_l):
         if target_l:

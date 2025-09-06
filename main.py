@@ -106,8 +106,7 @@ monster_count = 0
 all_monsters_arrived = False
 
 
-funny=get_frame("asset/funny",700,500,256)
-funny=[invert_surface_color(i)  for i in funny]
+funny=get_frame("asset/funny",1280,640,256)
 funny_index=0
 for i in range(6):
     for spirit in range(4):
@@ -298,7 +297,7 @@ def run_game():
                     screen.blit(fade_surface,(0,0))
                 if wave>=19:
                     wave_speed=1000
-                wave_time += dt * wave_speed * 0.005
+                wave_time += dt * wave_speed * 0.005*100
                 if wave_time > 100:
                     spawn_wave(wave)
                     wave += 1
@@ -306,7 +305,7 @@ def run_game():
                 for i in spirit_list:
                     for spirit in i:
                         if spirit:
-                            spirit.set_target(monster_list[spirit.line])
+                            spirit.set_target(i.hitbox for i in monster_list[spirit.line])
                             spirit.set_condition()
                             spirit.change_frame(dt)
                             spirit.draw(screen)
