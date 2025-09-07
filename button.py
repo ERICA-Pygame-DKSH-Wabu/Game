@@ -1,11 +1,5 @@
 from util import *
 
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-BLUE = (0, 0, 255)
-GREEN = (0, 255, 0)
-YELLOW = (255, 255, 0)
-BLACK = (0, 0, 0)
 
 class Button:
     def __init__(self,x,y,hitbox):
@@ -16,7 +10,7 @@ class Button:
         self.hitbox=hitbox
 
     def draw(self,screen):
-        pygame.draw.rect(screen,BLACK,self.hitbox)
+        pygame.draw.rect(screen,(0,0,0),self.hitbox)
 
 class Store_Button(Button):
     def __init__(self, x, y, hitbox, s_type):

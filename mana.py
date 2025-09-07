@@ -1,17 +1,12 @@
 import math
 import util
 
-frame = util.get_frame("asset/mana_frame", 20, 40, 220)
-frame2=[]
-for i in frame:
-    frame2.append(util.invert_surface_color(i))
-
 
 class Mana:
-    def __init__(self, center):
+    def __init__(self, center,frame1,frame2):
         self.charge=False
         self.frame2=frame2
-        self.frame = frame
+        self.frame = frame1
         self.frame_index = 0
         self.center = center
         self.relative_angle = 0

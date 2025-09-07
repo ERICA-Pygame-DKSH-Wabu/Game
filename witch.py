@@ -1,13 +1,7 @@
 from util import *
 
-frame = {
-    "attack": get_frame("asset/witch_frame/attack", 192*0.7, 256*0.7, 255),
-    "idle": get_frame("asset/witch_frame/idle", 192*0.7, 256*0.7, 255),
-    "spin": get_frame("asset/witch_frame/spin", 192*0.7, 256*0.7, 255)
-}
-
 class witch:
-    def __init__(self, hitbox):
+    def __init__(self, hitbox,frame):
         self.hitbox = hitbox
         self.max_health = 1000
         self.health = 1000
@@ -16,9 +10,9 @@ class witch:
         self.condition = "idle"
         self.img = self.frame["idle"][0]
         self.frame_index = 0
-        self.button_pressed = False   # 마우스 눌림 상태 저장
-        self.reversing = False        # spin 역재생 여부
-        self.appear = True            # main에서 인자로 들어오는 값
+        self.button_pressed = False
+        self.reversing = False
+        self.appear = True
 
     def setting(self):
         self.health = 500

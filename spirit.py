@@ -1,20 +1,7 @@
 from util import *
-spirit_frame_dict={}
-l=["water","light","stone","fire","dark","grass"]
-spirit_size=[96,120,120,150,120,120]
-for i in l:
-    spirit_frame_dict[i]={
-            "attack": get_frame(f"asset/spirit/{i}/attack",spirit_size[l.index(i)],spirit_size[l.index(i)],255),
-            "idle": get_frame(f"asset/spirit/{i}/idle",spirit_size[l.index(i)],spirit_size[l.index(i)],255),
-            "spin": get_frame(f"asset/spirit/{i}/spin",spirit_size[l.index(i)],spirit_size[l.index(i)],255),
-        }
-for i in spirit_frame_dict["fire"]["idle"]:
-    spirit_frame_dict["fire"]["idle"][ spirit_frame_dict["fire"]["idle"].index(i)]=set_im(i,138,138,255,True)
-# for i in spirit_frame_dict["water"]["attack"]:
-#     spirit_frame_dict["water"]["attack"][ spirit_frame_dict["water"]["attack"].index(i)]=set_im(i,120,120,255,True)
 
 class Spirit():
-    def __init__(self,pos,line, name=""):
+    def __init__(self,pos,line,frame, name=""):
         self.fade=255
         self.dead=False
         self.if_attack=False
@@ -27,7 +14,7 @@ class Spirit():
         self.distance=100
         self.target=False
         self.name=name
-        self.frame={}
+        self.frame=frame
         self.condition="idle"
         self.img=None
         self.hitbox=pygame.rect.Rect(0,0,50,50)
@@ -41,8 +28,8 @@ class Spirit():
         self.ct=0
         self.frame_index=0
         self.im_size=0
-        self.x_gap=0 #어둠, 빛 몬스터 전용
-        self.y_gap=0 #어둠, 빛 정령 기준
+        self.x_gap=0
+        self.y_gap=0
         self.enemy_circle_surface = pygame.Surface((self.hitbox.width+10,25), pygame.SRCALPHA)
         pygame.draw.ellipse(self.enemy_circle_surface, (0,0,0,96), (0,0,self.hitbox.width+10,25))
     def if_dead(self,dt):
@@ -79,7 +66,7 @@ class Spirit():
             if curr_rect.width > 0:
                 pygame.draw.rect(screen, (0, 255, 0), curr_rect)
     def set_frame(self):
-        self.frame=spirit_frame_dict[self.name]
+        self.frame=self.frame[self.name]
     def set_condition(self):
         if self.health<=0:
             self.condition="idle"
@@ -117,8 +104,8 @@ class Spirit():
     def change_condition(self):
         self.frame_index=0
 class Water_Spirit(Spirit):
-    def __init__(self, pos,line):
-        super().__init__(pos,line)
+    def __init__(self, pos,line,frame):
+        super().__init__(pos,line,frame)
         self.max_health=180
         self.health=self.max_health
         self.name = "water"
@@ -131,8 +118,8 @@ class Water_Spirit(Spirit):
         else:
             self.condition="spin"
 class Light_Spirit(Spirit):
-    def __init__(self, pos,line):
-        super().__init__(pos,line)
+    def __init__(self, pos,line,frame):
+        super().__init__(pos,line,frame)
         self.max_health=180
         self.health=self.max_health
         self.name = "light"
@@ -143,8 +130,8 @@ class Light_Spirit(Spirit):
         self.distance=600
         self.damage=30
 class Stone_Spirit(Spirit):
-    def __init__(self, pos,line):
-        super().__init__(pos,line)
+    def __init__(self, pos,line,frame):
+        super().__init__(pos,line,frame)
         self.max_health=340
         self.health=self.max_health
         self.name = "stone"
@@ -155,8 +142,8 @@ class Stone_Spirit(Spirit):
         self.y_gap=5
         
 class Fire_Spirit(Spirit):
-    def __init__(self, pos,line):
-        super().__init__(pos,line)
+    def __init__(self, pos,line,frame):
+        super().__init__(pos,line,frame)
         self.max_health=200
         self.health=self.max_health
         self.name = "fire"
@@ -167,8 +154,8 @@ class Fire_Spirit(Spirit):
         self.distance=250
         self.damage=45
 class Dark_Spirit(Spirit):
-    def __init__(self, pos,line):
-        super().__init__(pos,line)
+    def __init__(self, pos,line,frame):
+        super().__init__(pos,line,frame)
         self.max_health=180
         self.health=self.max_health
         self.name = "dark"
@@ -186,8 +173,8 @@ class Dark_Spirit(Spirit):
             else:
                 self.target = False
 class Grass_Spirit(Spirit):
-    def __init__(self, pos,line):
-        super().__init__(pos,line)
+    def __init__(self, pos,line,frame):
+        super().__init__(pos,line,frame)
         self.max_health=140
         self.health=self.max_health
         self.name = "grass"

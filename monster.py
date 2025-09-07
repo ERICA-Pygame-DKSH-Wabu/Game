@@ -1,18 +1,10 @@
 import pygame
 from spirit import *
-monster_frame_dict={}
-l=["water","light","stone","fire","dark","grass"]
-monster_size=[120,120,120,96,144,144]
-for i in l:
-    monster_frame_dict[i]={
-            "attack": get_frame(f"asset/monster/{i}/attack",monster_size[l.index(i)],monster_size[l.index(i)],255),
-            "idle": get_frame(f"asset/monster/{i}/idle",monster_size[l.index(i)],monster_size[l.index(i)],255),
-            "spin": get_frame(f"asset/monster/{i}/spin",monster_size[l.index(i)],monster_size[l.index(i)],255),
-        }
 class Monster(Spirit):
 
-    def __init__(self,pos, index, m_type):
-        super().__init__(pos,index, m_type)
+    def __init__(self,pos, index, m_type,frame):
+        super().__init__(pos,index, m_type,frame)
+        self.frame=frame
         self.x=pos.centerx
         self.name = m_type 
         self.im_size = 150 
@@ -43,7 +35,7 @@ class Monster(Spirit):
             if curr_rect.width > 0:
                 pygame.draw.rect(screen, (0, 255, 0), curr_rect)
     def set_frame(self):
-        self.frame=monster_frame_dict[self.name]
+        self.frame=self.frame[self.name]
     def set_condition(self):
         if int(self.hitbox.centerx)-self.distance  <= int(self.target)  and self.target:
             if self.reroad:
@@ -67,8 +59,8 @@ class Monster(Spirit):
 
 
 class Water_Monster(Monster): 
-    def __init__(self,pos, index,m): 
-        super().__init__(pos,index, m)
+    def __init__(self,pos, index,m,frame): 
+        super().__init__(pos,index, m,frame)
         self.max_health=125
         self.health=self.max_health
         self.im_size = 110 
@@ -78,8 +70,8 @@ class Water_Monster(Monster):
         self.attack_time=3
         self.damage=65
 class Light_Monster(Monster): 
-    def __init__(self,pos, index,m): 
-        super().__init__(pos,index, m)
+    def __init__(self,pos, index,m,frame): 
+        super().__init__(pos,index, m,frame)
         self.max_health=100
         self.health=self.max_health
         self.im_size = 100 
@@ -90,8 +82,8 @@ class Light_Monster(Monster):
         self.attack_time=4
         self.damage=60
 class Stone_Monster(Monster): 
-    def __init__(self, pos,index,m): 
-        super().__init__(pos,index, m)
+    def __init__(self, pos,index,m,frame): 
+        super().__init__(pos,index, m,frame)
         self.max_health=200
         self.health=self.max_health
         self.im_size = 120 
@@ -103,8 +95,8 @@ class Stone_Monster(Monster):
         self.damage=40
 
 class Fire_Monster(Monster): 
-    def __init__(self,pos, index,m): 
-        super().__init__(pos,index, m)
+    def __init__(self,pos, index,m,frame): 
+        super().__init__(pos,index, m,frame)
         self.max_health=65
         self.health=self.max_health
         self.y_gap = -5
@@ -114,8 +106,8 @@ class Fire_Monster(Monster):
         self.damage=60
 
 class Dark_Monster(Monster): 
-    def __init__(self,pos, index,m): 
-        super().__init__(pos,index,m)
+    def __init__(self,pos, index,m,frame): 
+        super().__init__(pos,index,m,frame)
         self.max_health=110
         self.health=self.max_health
         self.im_size = 100 
@@ -126,8 +118,8 @@ class Dark_Monster(Monster):
         self.damage=70
 
 class Grass_Monster(Monster): 
-    def __init__(self,pos, index,m): 
-        super().__init__(pos,index,m)
+    def __init__(self,pos, index,m,frame): 
+        super().__init__(pos,index,m,frame)
         self.max_health=110
         self.health=self.max_health
         self.im_size = 60
