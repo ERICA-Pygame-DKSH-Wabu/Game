@@ -16,7 +16,10 @@ class Game:
         self.screen_width = 1280
         self.screen_height = 640
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        pygame.display.set_caption("witch")
+        pygame.display.set_caption("Witch")
+        icon = pygame.image.load("asset/ui/icon.ico")
+        pygame.display.set_icon(icon)
+
         with open("story_wave.json", "r", encoding="utf-8") as f:
             self.wave_data = json.load(f)
         
@@ -151,7 +154,7 @@ class Game:
         self.damaged=False
         self.button_=False
         self.story_index=0
-        self.story_scene=0
+        self.story_scene_index=0
         self.im_size=get_im("asset/story/story1/1.png").get_size()
         self.scene_l=[get_frame("asset/story/story1",1280,640,256),
                       get_frame("asset/story/story2",1280,640,256)]
@@ -215,7 +218,7 @@ class Game:
         self.first = True
         self.cut_l = []
         self.story_index = 0
-        self.story_scene = 0
+        self.story_scene_index = 0
         self.change = False
         self.funny_index = 0
         self.reset = False
@@ -233,12 +236,12 @@ class Game:
                 self.click = True
                 if self.scene == "story" or self.tuto or self.if_story:
                     self.button_ = True
-                    if self.scene == "story" and mouse_pos[1] >= self.screen_height - 192 and mouse_pos[0] <= 192 and self.story_scene == 0:
+                    if self.scene == "story" and mouse_pos[1] >= self.screen_height - 192 and mouse_pos[0] <= 192 and self.story_scene_index == 0:
                         self.change_scene = "game"
                         self.scene_change.i = 1
                         self.cut_l = []
                         self.story_index = 0
-                        self.story_scene += 1
+                        self.story_scene_index += 1
                         self.button_ = False
                 elif self.scene in ("ending", "gameover"):
                     self.button_ = True
@@ -293,19 +296,19 @@ class Game:
             cut.draw(self.screen)
         if not self.scene_change.i == 1:
             self.screen.blit(self.skip, (-32, self.screen_height - 160))
-            if not self.cut_l and self.story_scene < len(self.scene_l):
+            if not self.cut_l and self.story_scene_index < len(self.scene_l):
                 self.story_index = 0
-                self.cut_l.append(Cut(0, 0, 0, self.scene_l[self.story_scene][self.story_index]))
+                self.cut_l.append(Cut(0, 0, 0, self.scene_l[self.story_scene_index][self.story_index]))
                 self.story_index += 1
             elif self.cut_l and self.cut_l[-1].fade_in(dt) and self.button_:
-                if self.story_index < len(self.scene_l[self.story_scene]):
+                if self.story_index < len(self.scene_l[self.story_scene_index]):
                     self.button_ = False
-                    self.cut_l.append(Cut(0, 0, 0, self.scene_l[self.story_scene][self.story_index]))
+                    self.cut_l.append(Cut(0, 0, 0, self.scene_l[self.story_scene_index][self.story_index]))
                     self.story_index += 1
-                elif self.story_scene == 0:
+                elif self.story_scene_index == 0:
                     self.cut_l = []
                     self.story_index = 0
-                    self.story_scene += 1
+                    self.story_scene_index += 1
                     self.scene_change.i = 1
                     self.change_scene = "game"
                     self.button_ = False
@@ -390,7 +393,7 @@ class Game:
             if self.wave >= 19:
                 self.wave_speed = 1000
 
-            self.wave_time += dt * self.wave_speed * 0.005 *3
+            self.wave_time += dt * self.wave_speed * 0.005
             if self.wave_time > 100:
                 self.spawn_wave(self.wave)
                 self.wave += 1
